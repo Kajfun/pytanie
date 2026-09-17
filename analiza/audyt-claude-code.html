@@ -1,0 +1,1051 @@
+<title>Audyt Akademii Claude Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+:root{
+  --ground:#EBEFEE; --surface:#FFFFFF; --surface2:#F5F8F7; --sunken:#E2E8E7;
+  --ink:#0E1E20; --ink2:#4B6361; --ink3:#718886;
+  --line:#D4DCDA; --line2:#C0CBC9;
+  --accent:#0E6B65; --accent-ink:#0A544F; --accent-soft:#D8EAE8;
+  --brass:#9A7628; --brass-soft:#F0E6CF;
+  --ok:#2C6C4D; --ok-soft:#DBEDE3;
+  --warn:#8E5B12; --warn-soft:#F6E7D2;
+  --risk:#A3382E; --risk-soft:#F7DFDC;
+  --shadow:0 1px 2px rgba(14,30,32,.06), 0 8px 24px -12px rgba(14,30,32,.18);
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0A1416; --surface:#101F22; --surface2:#15272B; --sunken:#0D1A1D;
+  --ink:#E3EDEB; --ink2:#95AFAC; --ink3:#6E8886;
+  --line:#21383C; --line2:#2C474B;
+  --accent:#4CCFC3; --accent-ink:#7FE0D6; --accent-soft:#10343A;
+  --brass:#D6AC55; --brass-soft:#2A2314;
+  --ok:#63C293; --ok-soft:#102C21;
+  --warn:#E0A44A; --warn-soft:#2E2312;
+  --risk:#EB7C70; --risk-soft:#331616;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}}
+:root[data-theme="dark"]{
+  --ground:#0A1416; --surface:#101F22; --surface2:#15272B; --sunken:#0D1A1D;
+  --ink:#E3EDEB; --ink2:#95AFAC; --ink3:#6E8886;
+  --line:#21383C; --line2:#2C474B;
+  --accent:#4CCFC3; --accent-ink:#7FE0D6; --accent-soft:#10343A;
+  --brass:#D6AC55; --brass-soft:#2A2314;
+  --ok:#63C293; --ok-soft:#102C21;
+  --warn:#E0A44A; --warn-soft:#2E2312;
+  --risk:#EB7C70; --risk-soft:#331616;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{text-wrap:balance;margin:0}
+a{color:var(--accent-ink);text-underline-offset:3px}
+code{font-family:var(--mono);font-size:.88em}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- topbar ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1220px;margin:0 auto;padding:10px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:9px;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);white-space:nowrap}
+.brand b{color:var(--brass);font-weight:600}
+.searchwrap{flex:1 1 240px;min-width:180px;position:relative;display:flex;align-items:center}
+.searchwrap svg{position:absolute;left:11px;width:15px;height:15px;color:var(--ink3);pointer-events:none}
+#q{width:100%;padding:8px 12px 8px 33px;border:1px solid var(--line2);border-radius:7px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
+#q::placeholder{color:var(--ink3)}
+.qmeta{font-family:var(--mono);font-size:11.5px;color:var(--ink3);white-space:nowrap}
+
+/* ---------- shell ---------- */
+.shell{max-width:1220px;margin:0 auto;padding:0 20px 80px;display:grid;grid-template-columns:225px minmax(0,1fr);gap:44px;align-items:start}
+@media (max-width:900px){.shell{grid-template-columns:1fr;gap:0}}
+
+/* ---------- sidebar ---------- */
+.side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);padding-block:30px;max-height:calc(100vh - 80px);overflow-y:auto}
+@media (max-width:900px){.side{display:none}}
+.side-h{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink3);padding:0 0 9px 11px}
+.side a{display:flex;gap:9px;align-items:baseline;padding:5px 11px;border-radius:6px;color:var(--ink2);text-decoration:none;font-size:13.5px;line-height:1.35;border-left:2px solid transparent}
+.side a:hover{color:var(--ink);background:var(--surface2)}
+.side a.on{color:var(--accent-ink);background:var(--accent-soft);border-left-color:var(--accent);font-weight:500}
+.side a span{font-family:var(--mono);font-size:10.5px;color:var(--ink3);flex:none;width:15px}
+.side a.on span{color:var(--accent)}
+
+.tocm{display:none;margin:18px 0 0}
+@media (max-width:900px){.tocm{display:block}}
+.tocm summary{cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);padding:11px 14px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.tocm ol{margin:9px 0 0;padding:0 0 0 20px;font-size:14px}
+.tocm li{margin:5px 0}
+.tocm a{color:var(--ink2);text-decoration:none}
+
+/* ---------- main ---------- */
+main{padding-block:30px;min-width:0}
+section{scroll-margin-top:90px;margin-bottom:58px}
+.eyebrow{display:flex;align-items:center;gap:11px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);margin-bottom:11px}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+h2{font-family:var(--serif);font-size:clamp(27px,4.2vw,37px);font-weight:400;line-height:1.14;letter-spacing:-.01em;margin-bottom:12px}
+h3{font-size:17px;font-weight:600;letter-spacing:-.005em;margin:26px 0 8px}
+.lede{font-size:17.5px;line-height:1.62;color:var(--ink2);max-width:66ch}
+p{max-width:68ch;margin:0 0 13px}
+main ul,main ol{max-width:68ch;padding-left:21px;margin:0 0 13px}
+main li{margin:6px 0}
+strong{font-weight:600;color:var(--ink)}
+
+/* ---------- hero ---------- */
+.hero{padding:40px 0 14px;border-bottom:1px solid var(--line);margin-bottom:46px}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(38px,7.2vw,68px);line-height:1.02;letter-spacing:-.02em;margin-bottom:18px}
+.hero h1 i{color:var(--brass)}
+.hero .lede{font-size:19px;max-width:60ch}
+.stamp{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);border:1px solid var(--line2);border-radius:99px;padding:5px 13px;margin-bottom:22px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);flex:none}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:30px 0 4px}
+.tile{background:var(--surface);padding:15px 16px}
+.tile b{display:block;font-family:var(--mono);font-size:26px;font-weight:500;line-height:1.05;color:var(--brass);font-variant-numeric:tabular-nums;margin-bottom:3px}
+.tile span{font-size:12.5px;color:var(--ink2);line-height:1.35;display:block}
+
+/* ---------- verdict ---------- */
+.verdict{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px 26px;box-shadow:var(--shadow);margin:26px 0}
+.verdict h3{margin-top:0;font-family:var(--serif);font-weight:400;font-size:25px}
+.vrow{display:grid;grid-template-columns:auto 1fr;gap:13px 15px;margin-top:17px;align-items:baseline}
+.vrow dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);white-space:nowrap;padding-top:3px}
+.vrow dd{margin:0;font-size:15px}
+@media (max-width:560px){.vrow{grid-template-columns:1fr;gap:3px 0}.vrow dd{margin-bottom:11px}}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--line2);border-radius:9px;padding:17px 19px;margin:13px 0;box-shadow:var(--shadow)}
+.card h4{font-size:15.5px;font-weight:600;margin-bottom:6px;display:flex;gap:9px;align-items:flex-start}
+.card p:last-child,.card ul:last-child{margin-bottom:0}
+.card.ok{border-left-color:var(--ok)}
+.card.warn{border-left-color:var(--warn)}
+.card.risk{border-left-color:var(--risk)}
+.card.info{border-left-color:var(--accent)}
+.tag{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:4px;flex:none;margin-top:1px;font-weight:500}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.risk{background:var(--risk-soft);color:var(--risk)}
+.tag.info{background:var(--accent-soft);color:var(--accent-ink)}
+.tag.brass{background:var(--brass-soft);color:var(--brass)}
+
+.src{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-top:9px;padding-top:8px;border-top:1px dashed var(--line)}
+
+/* ---------- filters ---------- */
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0 6px}
+.chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;padding:5px 11px;border:1px solid var(--line2);border-radius:99px;background:var(--surface);color:var(--ink2);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+
+/* ---------- quote ---------- */
+blockquote{margin:15px 0;padding:13px 17px;background:var(--surface2);border-left:3px solid var(--brass);border-radius:0 8px 8px 0;font-size:15px;color:var(--ink2);max-width:68ch}
+blockquote p:last-child{margin-bottom:0}
+blockquote cite{display:block;margin-top:7px;font-family:var(--mono);font-size:11px;font-style:normal;color:var(--ink3)}
+
+/* ---------- code ---------- */
+.snip{position:relative;margin:13px 0;background:var(--sunken);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.snip-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 11px;border-bottom:1px solid var(--line);background:var(--surface2)}
+.snip-h span{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)}
+.copy{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line2);background:var(--surface);color:var(--ink2);border-radius:5px;padding:3px 9px;cursor:pointer}
+.copy:hover{color:var(--accent-ink);border-color:var(--accent)}
+.copy.done{background:var(--ok-soft);color:var(--ok);border-color:var(--ok)}
+.snip pre{margin:0;padding:13px;overflow-x:auto;font-family:var(--mono);font-size:12.8px;line-height:1.62;color:var(--ink)}
+
+/* ---------- table ---------- */
+.tw{overflow-x:auto;margin:15px 0;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);font-weight:500;background:var(--surface2);position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ---------- pipeline ---------- */
+.pipe{margin:18px 0;overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:19px}
+.pipe svg{display:block;min-width:660px;max-width:100%;height:auto}
+
+/* ---------- checklist ---------- */
+.checks{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px 19px;margin:13px 0}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+.chk:last-child{border-bottom:none}
+.chk input{margin:4px 0 0;width:16px;height:16px;accent-color:var(--accent);flex:none;cursor:pointer}
+.chk label{cursor:pointer;font-size:14.5px;line-height:1.5}
+.chk label b{display:block;font-weight:600;font-size:15px;margin-bottom:2px}
+.chk label em{font-style:normal;color:var(--ink2);font-size:13.5px}
+.chk input:checked + label{opacity:.5;text-decoration:line-through;text-decoration-color:var(--ink3)}
+.chk input:checked + label em{text-decoration:none;display:inline-block}
+.prog{display:flex;align-items:center;gap:11px;margin:11px 0 0;font-family:var(--mono);font-size:11.5px;color:var(--ink3)}
+.bar{flex:1;height:5px;background:var(--sunken);border-radius:99px;overflow:hidden;max-width:230px}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+
+.note{font-size:13px;color:var(--ink3);font-family:var(--mono);line-height:1.55;margin-top:9px}
+.nores{display:none;padding:26px;text-align:center;color:var(--ink3);font-family:var(--mono);font-size:13px;border:1px dashed var(--line2);border-radius:10px}
+.hid{display:none!important}
+footer{border-top:1px solid var(--line);margin-top:46px;padding-top:22px;font-family:var(--mono);font-size:11.5px;color:var(--ink3);line-height:1.7}
+</style>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="brand"><b>AUDYT</b> Claude Code &middot; 09.2026</div>
+    <div class="searchwrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Szukaj: hook, subagent, koszt, Haiku, offline…" autocomplete="off">
+    </div>
+    <div class="qmeta" id="qmeta"></div>
+  </div>
+</div>
+
+<div class="shell">
+  <nav class="side" aria-label="Spis treści">
+    <div class="side-h">Spis treści</div>
+    <div id="sidenav"></div>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <div class="stamp"><i class="dot"></i> Analiza ukończona &middot; 39/39 transkrypcji</div>
+      <h1>Kurs, który uczy <i>metody</i>, a myli się w <i>szczegółach</i></h1>
+      <p class="lede">Przeczytałem całą Akademię Claude Code — opisy lekcji, wszystkie transkrypcje i realny kod ośmiu repozytoriów — i skonfrontowałem każdą istotną tezę z aktualną dokumentacją Anthropic. To jest wynik: co działa, co jest przeterminowane, czego kurs nie wie, i co z tym zrobić u siebie.</p>
+
+      <div class="tiles">
+        <div class="tile"><b>39</b><span>transkrypcji lekcji</span></div>
+        <div class="tile"><b>8</b><span>repozytoriów kodu</span></div>
+        <div class="tile"><b>85</b><span>plików SKILL.md</span></div>
+        <div class="tile"><b>33</b><span>subagentów</span></div>
+        <div class="tile"><b>11</b><span>tez do korekty</span></div>
+      </div>
+      <p class="note">Źródła pierwotne: 5 PDF-ów (62 strony), transkrypcje z Dysku Google, repozytoria <code>workspace-template-mobile</code>, <code>claude-code-zasoby</code>, <code>nawykometr-docs</code>, <code>ralph-tui</code>, <code>design.md</code> i cztery inne. Weryfikacja: code.claude.com/docs, stan na 17.09.2026.</p>
+    </header>
+
+    <section id="werdykt" data-t="Werdykt">
+      <div class="eyebrow">Odpowiedź wprost</div>
+      <h2>Czy warto to oglądać?</h2>
+
+      <div class="verdict">
+        <h3>Tak — ale nie po to, po co myślisz.</h3>
+        <p>Ten kurs jest słaby jako <strong>encyklopedia Claude Code</strong>: nazwy modeli są przeterminowane, jedna nazwa zmiennej środowiskowej jest wprost błędna, a kilka pól konfiguracyjnych autor po prostu przegapił. Gdybyś oglądał go dla faktów, część wiedzy musiałbyś potem odkręcać.</p>
+        <p>Jest natomiast <strong>bardzo dobry jako szkoła metody</strong>. Pokazuje coś, czego dokumentacja nie pokaże nigdy: jak wygląda pełny cykl budowy aplikacji z agentem przez kilkadziesiąt godzin — z planowaniem, którego nie chce ci się robić, z awariami, których nie da się przewidzieć, i z ręczną robotą, której nikt nie reklamuje.</p>
+        <dl class="vrow">
+          <dt>Dla kogo</dt>
+          <dd>Dla kogoś, kto już uruchomił Claude Code i uderzył w ścianę: kod się rozjeżdża, agent gubi kontekst, projekt po tygodniu jest nie do utrzymania. Kurs jest odpowiedzią na ten problem, nie na „jak zacząć".</dd>
+          <dt>Nie dla</dt>
+          <dd>Kogoś, kto szuka aktualnej referencji API albo szybkiego startu. Dokumentacja Anthropic zrobi to lepiej i za darmo.</dd>
+          <dt>Ile czasu</dt>
+          <dd>Moduły 1–2 (18 lekcji) to solidny fundament. Moduł mobilny to ~15 godzin materiału o jednym projekcie — oglądaj tylko jeśli faktycznie robisz apkę mobilną.</dd>
+          <dt>Co pominąć</dt>
+          <dd>Lekcję o Ollamie (ciekawostka, sam autor odradza do kodowania), lekcję o git worktree w części implementacyjnej (jest już funkcja wbudowana — patrz sekcja 5), i lekcje #7–#8 modułu mobilnego, jeśli nie publikujesz w App Store.</dd>
+        </dl>
+      </div>
+
+      <div class="card ok">
+        <h4><span class="tag ok">Najmocniejsza teza</span></h4>
+        <p>Jeśli miałbyś wyjąć z tego kursu jedno zdanie i nic więcej:</p>
+        <blockquote>
+          <p>„To jest poniekąd trochę nudna robota, siedzicie przy komputerze około godzinkę […] ale obiecuję, że zaprocentuje tym, że potem będzie mniej błędów i wracania się w budowie aplikacji do wcześniejszych etapów. Im lepiej przygotujemy mu kontekst i dokumenty, tym potem możemy liczyć na lepsze wykonanie."</p>
+          <cite>Moduł mobilny, lekcja #2</cite>
+        </blockquote>
+        <p>To nie jest slogan. W lekcji #3 autor pokazuje, jak adwersarialny przegląd planu <strong>przed napisaniem kodu</strong> wyłapał 15 luk — w tym taką, że aplikacja projektowana pod tryb online miałaby inną strukturę danych niż potrzebna do trybu offline dodanego dwa etapy później. Znalezienie tego po napisaniu kodu oznaczałoby przepisanie warstwy danych.</p>
+      </div>
+    </section>
+
+    <section id="zmiana" data-t="Co to zmienia">
+      <div class="eyebrow">Dla naszej współpracy</div>
+      <h2>Co zmienia to, co mi wysłałeś</h2>
+      <p>Pytałeś wprost, więc odpowiadam wprost — zmienia trzy rzeczy, i tylko trzy. Reszta to szum.</p>
+
+      <div class="card info">
+        <h4><span class="tag info">1</span>Mam gotowy, sprawdzony pipeline zamiast improwizacji</h4>
+        <p>Sklonowałem <code>workspace-template-mobile</code> i <code>claude-code-zasoby</code>. To nie są opisy — to działający kod: 85 skilli, 33 subagentów, 22 hooki, 23 skrypty workflow. Przeczytałem rdzeń i jest <strong>lepiej zainżynierowany, niż się spodziewałem</strong>: maszyna stanu z wznawianiem po przerwaniu, limit cykli naprawczych, bramki severity, wykrywanie sytuacji, w której agent testujący po cichu się nie uruchomił.</p>
+        <p>Praktycznie: kiedy powiesz „zbuduj etap X", nie muszę wymyślać procesu od zera. Mogę zaproponować konkretny, przetestowany łańcuch i powiedzieć, gdzie on ma dziury.</p>
+      </div>
+
+      <div class="card info">
+        <h4><span class="tag info">2</span>Wiem, jak chcesz pracować — i mogę się do tego dostroić</h4>
+        <p>Z materiałów wynika konkretny styl: planowanie przed kodem, praca na branchach, checklista operatora, zewnętrzne review, komentarz biznesowy zamiast żargonu. To jest dobry styl. Będę do niego pasował domyślnie, zamiast pytać przy każdym zadaniu.</p>
+      </div>
+
+      <div class="card info">
+        <h4><span class="tag info">3</span>Wiem, czego ten kurs cię nie nauczy — i mogę to uzupełnić</h4>
+        <p>Jedenaście konkretnych rzeczy, gdzie materiał jest przeterminowany albo niepełny. Najważniejsze: <code>maxTurns</code> i <code>isolation: worktree</code> robią natywnie to, co kurs buduje ręcznie, a Haiku ma pięć razy mniejsze okno kontekstowe, niż kurs sugeruje. To są rzeczy, które kosztowałyby cię godziny.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Czego to nie zmienia</span></h4>
+        <p>Nie zmienia tego, że <strong>ręczna weryfikacja jest nieusuwalna</strong>. Najmocniejszy dowód w całym materiale jest taki: autopilot przeszedł własne review pięcioma subagentami, testy jednostkowe i testy end-to-end — a potem człowiek kliknął w apkę i okazało się, że <strong>główny ekran nie wyświetla celów</strong>. Żaden pipeline tego nie zastąpi. Ani ten, ani mój.</p>
+      </div>
+    </section>
+
+    <section id="metoda" data-t="Rdzeń metody">
+      <div class="eyebrow">Sedno kursu</div>
+      <h2>Pipeline, wokół którego kręci się wszystko</h2>
+      <p>Cała wartość kursu sprowadza się do jednego łańcucha. Nazwy skilli są autorskie, ale <strong>sama sekwencja jest przenośna</strong> — możesz ją odtworzyć bez kupowania czegokolwiek.</p>
+
+      <div class="pipe">
+        <svg viewBox="0 0 900 250" role="img" aria-label="Diagram pipeline: od pomysłu przez PRD, roast, podział na etapy, plan techniczny, dokumenty implementacyjne, autopilota, checklistę operatora i zewnętrzne review, do merge">
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <g font-family="IBM Plex Mono, monospace" font-size="11" fill="currentColor" color="currentColor">
+            <text x="8" y="22" font-size="10" letter-spacing="1.2" fill="var(--brass)">FAZA 1 — MYŚLENIE (człowiek prowadzi)</text>
+            <g stroke="var(--line2)" stroke-width="1.5" fill="var(--surface2)">
+              <rect x="8" y="34" width="118" height="42" rx="7"/>
+              <rect x="150" y="34" width="118" height="42" rx="7"/>
+              <rect x="292" y="34" width="132" height="42" rx="7"/>
+              <rect x="448" y="34" width="118" height="42" rx="7"/>
+            </g>
+            <g fill="var(--ink)" text-anchor="middle">
+              <text x="67" y="52">pomysł</text><text x="67" y="66" font-size="9.5" fill="var(--ink3)">prd.md</text>
+              <text x="209" y="52" fill="var(--risk)">/zroastuj-mnie</text><text x="209" y="66" font-size="9.5" fill="var(--ink3)">11 błędów</text>
+              <text x="358" y="52">/brainstorm</text><text x="358" y="66" font-size="9.5" fill="var(--ink3)">podział na etapy</text>
+              <text x="507" y="52" fill="var(--risk)">/zroastuj-mnie</text><text x="507" y="66" font-size="9.5" fill="var(--ink3)">15 luk</text>
+            </g>
+            <g stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)" color="var(--ink3)">
+              <path d="M128 55 L146 55"/><path d="M270 55 L288 55"/><path d="M426 55 L444 55"/>
+            </g>
+
+            <text x="8" y="112" font-size="10" letter-spacing="1.2" fill="var(--brass)">FAZA 2 — WYKONANIE (agent prowadzi)</text>
+            <g stroke="var(--line2)" stroke-width="1.5" fill="var(--surface2)">
+              <rect x="8" y="124" width="118" height="42" rx="7"/>
+              <rect x="150" y="124" width="118" height="42" rx="7"/>
+              <rect x="292" y="124" width="160" height="42" rx="7" fill="var(--accent-soft)" stroke="var(--accent)"/>
+            </g>
+            <g fill="var(--ink)" text-anchor="middle">
+              <text x="67" y="142">/dev-plan</text><text x="67" y="156" font-size="9.5" fill="var(--ink3)">jeden etap</text>
+              <text x="209" y="142">/dev-docs</text><text x="209" y="156" font-size="9.5" fill="var(--ink3)">zadania + kontekst</text>
+              <text x="372" y="142" fill="var(--accent-ink)">/dev-autopilot</text><text x="372" y="156" font-size="9.5" fill="var(--ink3)">execute → review → fix</text>
+            </g>
+            <g stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)" color="var(--ink3)">
+              <path d="M128 145 L146 145"/><path d="M270 145 L288 145"/>
+            </g>
+            <path d="M372 168 L372 182 L330 182" stroke="var(--ink3)" stroke-width="1.4" fill="none" marker-end="url(#ar)" color="var(--ink3)"/>
+            <text x="326" y="186" text-anchor="end" font-size="9.5" fill="var(--ink3)">max 2 cykle naprawcze</text>
+
+            <text x="500" y="112" font-size="10" letter-spacing="1.2" fill="var(--brass)">FAZA 3 — ODBIÓR (człowiek wraca)</text>
+            <g stroke="var(--line2)" stroke-width="1.5" fill="var(--surface2)">
+              <rect x="500" y="124" width="126" height="42" rx="7" stroke="var(--warn)"/>
+              <rect x="648" y="124" width="126" height="42" rx="7" stroke="var(--warn)"/>
+              <rect x="796" y="124" width="96" height="42" rx="7" fill="var(--ok-soft)" stroke="var(--ok)"/>
+            </g>
+            <g fill="var(--ink)" text-anchor="middle">
+              <text x="563" y="142" fill="var(--warn)">checklista</text><text x="563" y="156" font-size="9.5" fill="var(--ink3)">operatora</text>
+              <text x="711" y="142" fill="var(--warn)">CodeRabbit</text><text x="711" y="156" font-size="9.5" fill="var(--ink3)">+6 błędów</text>
+              <text x="844" y="142" fill="var(--ok)">merge</text><text x="844" y="156" font-size="9.5" fill="var(--ink3)">do main</text>
+            </g>
+            <g stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)" color="var(--ink3)">
+              <path d="M628 145 L644 145"/><path d="M776 145 L792 145"/>
+            </g>
+            <path d="M452 145 L470 145 L470 200 L8 200 L8 216" stroke="var(--ink3)" stroke-width="1.4" fill="none" stroke-dasharray="4 3"/>
+            <text x="14" y="232" font-size="9.5" fill="var(--ink3)">/dev-compound — zapisuje nauczone błędy do .claude/rules/learned-patterns.md → kolejny etap ich nie powtórzy</text>
+          </g>
+        </svg>
+      </div>
+
+      <h3>Dlaczego to działa</h3>
+      <p>Nie dlatego, że skille są magiczne. Dlatego, że rozwiązuje jeden konkretny problem: <strong>degradację jakości przy rosnącym kontekście</strong>. Jeden etap = jedna sesja = czysty kontekst. Stan między sesjami żyje w plikach markdown z checkboxami, nie w pamięci agenta. Agent po przerwaniu parsuje checkboxy i wie, gdzie skończył.</p>
+
+      <div class="card ok">
+        <h4><span class="tag ok">Do skopiowania bez kursu</span>Dwa etapy roastu, nie jeden</h4>
+        <p>Autor uruchamia adwersarialną weryfikację <strong>dwa razy</strong>: raz na dokumencie produktowym (co budujemy), raz na podziale na etapy (w jakiej kolejności). To drugie jest nieoczywiste i tam wyszły najdroższe błędy — kolejność implementacji przesądza o strukturze danych.</p>
+      </div>
+
+      <h3>Sam skill roastujący jest dobrze napisany</h3>
+      <p>Przeczytałem jego kod. Ma cechy, które warto podkraść niezależnie od kursu:</p>
+      <ul>
+        <li><strong>Jedno pytanie naraz</strong>, z rekomendowaną odpowiedzią i uzasadnieniem — zamiast ściany dwudziestu pytań.</li>
+        <li><strong>Najpierw skan repozytorium</strong>, dopiero potem pytania: „nie pytaj o rzeczy, które są już udokumentowane".</li>
+        <li><strong>Wykrywanie sprzeczności</strong> z wcześniejszymi decyzjami, z podaniem pliku: „w <code>docs/solutions/…</code> zdecydowaliśmy X — teraz proponujesz Y. To świadoma zmiana, czy nie pamiętałeś?".</li>
+        <li><strong>Wymuszanie precyzji terminologicznej</strong> — gdy używasz rozmytego słowa, pyta o kanoniczne znaczenie.</li>
+        <li><strong>Konkretne scenariusze zamiast abstrakcji</strong>: „abstrakcyjne deklaracje są tanie".</li>
+        <li><strong>Sugeruje utrwalenie, ale nie tworzy artefaktów sam</strong> — i maksymalnie raz na typ, „nie spamuj".</li>
+      </ul>
+    </section>
+
+    <section id="dobre" data-t="Co jest dobre">
+      <div class="eyebrow">Warte twojego czasu</div>
+      <h2>Co w tym kursie jest naprawdę dobre</h2>
+      <div class="filters" data-for="dobre">
+        <button class="chip" aria-pressed="false" data-f="all">Wszystko</button>
+        <button class="chip" aria-pressed="false" data-f="uniw">Uniwersalne</button>
+        <button class="chip" aria-pressed="false" data-f="mob">Mobilne</button>
+      </div>
+
+      <div class="card ok" data-f="uniw">
+        <h4><span class="tag ok">Kluczowe</span>„Jedno zadanie na kontekst"</h4>
+        <p>Po każdym ukończonym zadaniu <code>/clear</code>. Nie kontynuuj w tym samym oknie tylko dlatego, że zostało miejsce. To najtańsza i najskuteczniejsza rada w całym materiale — działa od pierwszego dnia, nic nie kosztuje i nie wymaga żadnej infrastruktury.</p>
+        <p class="src">Moduł 1, lekcja #1-7</p>
+      </div>
+
+      <div class="card ok" data-f="uniw">
+        <h4><span class="tag ok">Kluczowe</span>„Skill zmienia <em>jak</em> Claude pracuje, subagent zmienia <em>kto</em> pracuje"</h4>
+        <p>Najlepsze zdanie w kursie. Skill to instrukcja ładowana do <strong>twojego</strong> kontekstu — zmienia sposób pracy. Subagent to osobny pracownik z własnym oknem, który wraca z raportem — zmienia wykonawcę. Z tego rozróżnienia wynika reszta: kiedy czego użyć i dlaczego subagent oszczędza kontekst, a skill nie.</p>
+        <p class="src">Moduł 2, lekcja #4</p>
+      </div>
+
+      <div class="card ok" data-f="uniw">
+        <h4><span class="tag ok">Kluczowe</span>Plik <code>design.md</code> jako brand book dla agenta</h4>
+        <p>Koncepcja Google Labs, którą kurs dobrze tłumaczy problemem, nie definicją:</p>
+        <blockquote><p>„Zlecasz agentowi zbudowanie ekranów. Robi ładnie. Następnego dnia każesz dorobić drugi ekran i nagle przyciski mają inny odcień niebieskiego, inne zaokrąglenia, inne odstępy. <strong>Agent nie pamięta swojego stylu między sesjami</strong> — za każdym razem zgaduje od nowa."</p></blockquote>
+        <p>Dwie warstwy: twarde wartości (kolory, typografia, spacing) + uzasadnienia (skąd te wartości, kiedy ich używać). Przenosi się na każdy projekt z interfejsem, także webowy. Katalog gotowych plików dużych firm: <code>getdesign.md</code>.</p>
+        <p class="src">Moduł mobilny, lekcja #4</p>
+      </div>
+
+      <div class="card ok" data-f="uniw">
+        <h4><span class="tag ok">Warte</span>Odwrócone pytanie: „czego ode mnie potrzebujesz?"</h4>
+        <p>Zamiast „zrób etap pierwszy" — <em>„wypisz mi, co muszę przygotować, żebyś mógł wykonać etap pierwszy"</em>. Odpowiedź rozbita na trzy kubełki: <strong>co muszę</strong> / <strong>co już mam</strong> / <strong>co nie blokuje, ale przyspieszy</strong>. Kosztuje jeden prompt, oszczędza godzinę zatrzymywania się po brakujący klucz API.</p>
+        <p class="src">Moduł mobilny, lekcja #4</p>
+      </div>
+
+      <div class="card ok" data-f="uniw">
+        <h4><span class="tag ok">Warte</span>Audyt własnych sesji pod kątem skilli</h4>
+        <p>Poproś Claude'a, żeby przejrzał projekt, historię commitów i logi sesji i wskazał powtarzalne czynności warte opakowania w skill. W demo wyszły cztery sensowne propozycje. To jest darmowe i możesz zrobić to dziś.</p>
+        <p class="src">Moduł 2, lekcja #2</p>
+      </div>
+
+      <div class="card ok" data-f="uniw">
+        <h4><span class="tag ok">Warte</span>„Mów do mnie jak do osoby z biznesu"</h4>
+        <p>Gdy odpowiedź jest zbyt techniczna: <em>„potraktuj mnie jako osobę z biznesu, której musisz wytłumaczyć, dlaczego coś jest błędne, i daj propozycje naprawy"</em>. Autor używa tego przy raportach z review i to jest dokładnie ten moment, w którym nietechniczna osoba zwykle się poddaje.</p>
+        <p class="src">Moduł mobilny, lekcja #3</p>
+      </div>
+
+      <div class="card ok" data-f="uniw">
+        <h4><span class="tag ok">Warte</span>Analityka przed kodem</h4>
+        <p>„Danych nie da się dorobić wstecz." Lista 13 zdarzeń do śledzenia powstała <strong>zanim</strong> napisano pierwszą linijkę. Pomysł na listę wygenerował Claude — pytanie brzmiało: „jakie akcje warto śledzić, żeby dane pokazywały, gdzie użytkownik się zatrzymuje i czego nie wykonuje".</p>
+        <p class="src">Moduł mobilny, lekcja #9</p>
+      </div>
+
+      <div class="card ok" data-f="mob">
+        <h4><span class="tag ok">Warte</span>Zamknięta pętla wizualna przez Playwright</h4>
+        <p>W skillu UX/UI zapisano, że <strong>po każdej zmianie wizualnej</strong> agent uruchamia MCP Playwright, otwiera stronę, robi zrzuty i sam ocenia wdrożenie. Prosty pomysł, realnie skraca cykl poprawek dla frontendu.</p>
+        <p class="src">Moduł dodatkowy, lekcja o landing page</p>
+      </div>
+
+      <div class="card ok" data-f="uniw">
+        <h4><span class="tag ok">Warte</span>Mechanizm <code>dev-compound</code> — agent, który nie powtarza błędów</h4>
+        <p>Po każdym etapie rozwiązane problemy trafiają do <code>.claude/rules/learned-patterns.md</code>. Zajrzałem do tego pliku w repozytorium i to nie jest atrapa — są tam datowane, konkretne lekcje z produkcji. Najlepsza z nich:</p>
+        <blockquote><p>„Deliverable E2E napisany, lecz nieuruchomiony = bug ukryty do pierwszego realnego przebiegu — <strong>»green« bez wykonania jest fałszywy</strong>."</p><cite>learned-patterns.md, wpis z 23.06.2026</cite></blockquote>
+        <p class="src">Repozytorium workspace-template-mobile</p>
+      </div>
+
+      <div class="card ok" data-f="uniw">
+        <h4><span class="tag ok">Warte</span>Plik z promptami do Remotion — wzorzec inżynierii promptu</h4>
+        <p>Najlepszy pojedynczy artefakt w całym kursie, i to jako <em>forma</em>, nie treść. Struktura: pięć warstw (specyfikacja wizualna → konfiguracja → schemat danych → choreografia → prompt do replikacji) plus <strong>checklisty antywzorców z pokazanym błędnym przykładem</strong>, plus wymuszenie samoweryfikacji na końcu. Ten szkielet przenosi się na dowolną dziedzinę.</p>
+        <p class="src">Moduł dodatkowy, lekcja o Remotion</p>
+      </div>
+    </section>
+
+    <section id="korekta" data-t="Do korekty">
+      <div class="eyebrow">Weryfikacja wobec dokumentacji</div>
+      <h2>Co jest przeterminowane albo wprost błędne</h2>
+      <p>Każdą istotną tezę sprawdziłem w dokumentacji Anthropic. Poniżej tylko rozbieżności — potwierdzonych tez nie wypisuję, bo jest ich większość.</p>
+
+      <div class="filters" data-for="korekta">
+        <button class="chip" aria-pressed="false" data-f="all">Wszystko</button>
+        <button class="chip" aria-pressed="false" data-f="blok">Blokujące</button>
+        <button class="chip" aria-pressed="false" data-f="wazne">Ważne</button>
+        <button class="chip" aria-pressed="false" data-f="drobne">Drobne</button>
+      </div>
+
+      <div class="card risk" data-f="blok">
+        <h4><span class="tag risk">Blokujące</span>Agent Teams: zła nazwa zmiennej środowiskowej</h4>
+        <p>Kurs podaje <strong>trzy różne warianty</strong>, w zależności od tego, czy słuchasz transkrypcji, czy czytasz PDF:</p>
+        <div class="snip"><div class="snip-h"><span>Co mówi kurs — nie działa</span></div><pre>CLAUDE_CODE_EXPERIMENTAL = 1
+claude.code.experimental.agents
+CLAUDE_CODE_EXPERIMENTAL_AGENTS</pre></div>
+        <div class="snip"><div class="snip-h"><span>Poprawnie</span><button class="copy" data-c="CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1">Kopiuj</button></div><pre>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</pre></div>
+        <p>Kto przepisze z kursu, funkcji nie włączy i nie dowie się dlaczego — nie ma komunikatu błędu, po prostu nic się nie dzieje.</p>
+      </div>
+
+      <div class="card risk" data-f="blok">
+        <h4><span class="tag risk">Blokujące</span>Haiku ma 200K kontekstu, nie milion — kurs tego nie mówi</h4>
+        <p>Kurs w dwóch miejscach radzi Haiku jako tańszy model: dla subagentów i jako kontroler w pętli <code>/goal</code>. Rada sama w sobie jest dobra. Problem w tym, że kurs <strong>nigdzie nie wspomina</strong>, że Haiku 4.5 ma okno <strong>200K</strong>, podczas gdy cała reszta rodziny ma 1M.</p>
+        <p>Konsekwencja: przestawiasz subagenta na Haiku dla oszczędności i przy zadaniu „przejrzyj 50 plików" wysypuje się tam, gdzie Opus by przeszedł. Nie dostaniesz czytelnego komunikatu „za mało kontekstu" — dostaniesz gorszy wynik.</p>
+        <div class="tw"><table>
+          <thead><tr><th>Model</th><th>Okno</th><th>Uwaga</th></tr></thead>
+          <tbody>
+            <tr><td>Claude Fable 5.1</td><td class="num">1M</td><td>najbardziej zdolny szeroko dostępny</td></tr>
+            <tr><td>Claude Opus 5</td><td class="num">1M</td><td>domyślny wybór do trudnych zadań</td></tr>
+            <tr><td>Claude Sonnet 5</td><td class="num">1M</td><td>dobry stosunek jakości do kosztu</td></tr>
+            <tr><td>Claude Haiku 4.5</td><td class="num">200K</td><td>⚠ pięć razy mniej — uważaj z subagentami</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="card warn" data-f="wazne">
+        <h4><span class="tag warn">Ważne</span>Nazwy modeli w kursie są przeterminowane — i niespójne same ze sobą</h4>
+        <p>W różnych lekcjach usłyszysz: „Opus 4.6", „Opus 4.7", „Sonnet 4.6", „Haiku 4.5", „Haiku 4.0". W jeszcze innej autor włącza model <em>Fable</em>. Kurs był nagrywany przez kilka generacji modeli i nazwy dryfują <strong>w obrębie samego materiału</strong>.</p>
+        <p>Aktualna generacja to rodzina <strong>Claude 5</strong>. Modele 4.6–4.8 nadal działają, ale to poprzednie pokolenie. Praktyczny wniosek: nie ucz się nazw modeli z żadnego kursu — sprawdzaj <code>/model</code> w narzędziu.</p>
+      </div>
+
+      <div class="card warn" data-f="wazne">
+        <h4><span class="tag warn">Ważne</span>Subagent a skille — rada dobra, uzasadnienie błędne</h4>
+        <p>Kurs: <em>„subagent nie ma dostępu do skilli, musisz je wymienić we frontmatterze"</em>. Autor celowo prowokuje ten błąd w demo, żeby go pokazać — dydaktycznie dobrze, merytorycznie nieściśle.</p>
+        <p>Dokumentacja mówi co innego: pole <code>skills</code> <strong>preładowuje</strong> treść skilla do kontekstu subagenta na starcie. Bez tego pola subagent <strong>nadal może</strong> odkryć i wywołać skill sam, przez narzędzie Skill.</p>
+        <blockquote><p>„This field controls which skills are <strong>preloaded</strong>, not which skills the subagent can <strong>access</strong>: without it, the subagent can still discover and invoke project, user, and plugin skills through the Skill tool during execution."</p><cite>code.claude.com/docs/en/sub-agents</cite></blockquote>
+        <p>Wymienianie skilli nadal jest dobrą praktyką — oszczędza rundę na odkrywanie i daje gwarancję. Ale to optymalizacja, nie bramka dostępu.</p>
+      </div>
+
+      <div class="card warn" data-f="wazne">
+        <h4><span class="tag warn">Ważne</span>Auto memory: kurs mówi, że nie masz kontroli. Masz.</h4>
+        <p>Kurs: <em>„my nie mamy wpływu na to, jakie informacje tam się zapisują […] Ty nie widzisz tych plików"</em>. To nieprawda. Pliki to zwykły markdown — możesz je czytać, edytować i kasować.</p>
+        <div class="snip"><div class="snip-h"><span>Kontrola nad auto memory</span><button class="copy" data-c="/memory">Kopiuj</button></div><pre>/memory                        → przegląd i otwarcie folderu pamięci
+~/.claude/projects/&lt;projekt&gt;/memory/   → lokalizacja plików
+autoMemoryEnabled: false       → wyłączenie (globalnie lub per projekt)
+CLAUDE_CODE_DISABLE_AUTO_MEMORY=1
+autoMemoryDirectory            → zmiana lokalizacji</pre></div>
+        <p>Ładowane jest pierwsze 200 linii <code>MEMORY.md</code> lub 25 KB — co nastąpi pierwsze. Pamięć jest lokalna dla maszyny i dzielona przez wszystkie worktree tego samego repozytorium.</p>
+      </div>
+
+      <div class="card warn" data-f="wazne">
+        <h4><span class="tag warn">Ważne</span>„Auto dream" — funkcja niepotwierdzona</h4>
+        <p>Kurs opisuje mechanizm porządkujący pliki pamięci między sesjami. W dokumentacji pamięci <strong>nie ma takiego pojęcia</strong>.</p>
+        <p>Na plus dla autora: sam oznaczył to jako niepewne — <em>„jeszcze nie działa oficjalnie tak jak deklarują, są to pewne wycieki"</em>. Traktuj jako ciekawostkę, nie buduj na tym procesu.</p>
+      </div>
+
+      <div class="card warn" data-f="drobne">
+        <h4><span class="tag warn">Drobne</span>Frontmatter reguł: <code>paths</code>, nie <code>path</code></h4>
+        <p>Kurs mówi o „frontmatterze z argumentem <code>path</code>". Pole nazywa się <code>paths</code> i przyjmuje <strong>listę</strong> globów. Literówka = reguła się nie wczyta, bez komunikatu.</p>
+        <div class="snip"><div class="snip-h"><span>.claude/rules/api.md</span><button class="copy" data-c="---&#10;paths:&#10;  - &quot;src/api/**/*.ts&quot;&#10;  - &quot;src/**/*.{ts,tsx}&quot;&#10;---">Kopiuj</button></div><pre>---
+paths:
+  - "src/api/**/*.ts"
+  - "src/**/*.{ts,tsx}"
+---
+
+# Reguły dla API
+- Każdy endpoint waliduje wejście
+- Standardowy format błędu</pre></div>
+        <p>Reguła bez pola <code>paths</code> ładuje się bezwarunkowo, z tym samym priorytetem co <code>.claude/CLAUDE.md</code>. Reguła z <code>paths</code> włącza się dopiero, gdy Claude czyta pasujący plik.</p>
+      </div>
+
+      <div class="card warn" data-f="drobne">
+        <h4><span class="tag warn">Drobne</span>Pliki CLAUDE.md się <em>sklejają</em>, nie nadpisują</h4>
+        <p>Kurs sugeruje hierarchię nadpisywania. W rzeczywistości wszystkie znalezione pliki są <strong>konkatenowane</strong> — od katalogu głównego w dół do katalogu roboczego, a <code>CLAUDE.local.md</code> doklejany po <code>CLAUDE.md</code> na danym poziomie. Instrukcje bliżej miejsca uruchomienia są czytane jako ostatnie.</p>
+        <p>Praktyczna konsekwencja, której kurs nie wyciąga: <strong>sprzeczne reguły nie rozstrzygają się same</strong>. Dokumentacja mówi wprost, że Claude „może wybrać jedną arbitralnie". Porządkowanie to twoja robota.</p>
+      </div>
+
+      <div class="card info" data-f="drobne">
+        <h4><span class="tag info">Nietrwałe</span>Liczby, które zdezaktualizują się najszybciej</h4>
+        <p>„133 pluginy", „ponad 140 skilli", „91 tysięcy skilli na skills.sh", „prawie milion na skillsmp". To zdjęcia z konkretnego dnia — nie cytuj jako fakty. Ceny planów też sprawdzaj u źródła, nie w kursie.</p>
+      </div>
+    </section>
+
+    <section id="luki" data-t="Czego kurs nie wie">
+      <div class="eyebrow">Luki w materiale</div>
+      <h2>Czego kurs nie wie — a co zmieniłoby w nim całe lekcje</h2>
+      <p>To nie są błędy autora. To funkcje, które albo pojawiły się później, albo zostały przeoczone. Każda z nich oszczędza realną robotę.</p>
+
+      <div class="card risk">
+        <h4><span class="tag risk">Duże</span><code>isolation: worktree</code> — cała lekcja kursu jest obejściem</h4>
+        <p>Kurs poświęca osobną lekcję na autorski system trzech komend (<code>/parallel-prep</code>, <code>/parallel-execute</code>, <code>/parallel-cleanup</code>) plus dedykowanego subagenta, żeby uruchamiać warianty w równoległych git worktree.</p>
+        <p>Subagent ma dziś pole <code>isolation</code> z wartością <code>worktree</code>. Jedno pole we frontmatterze robi to, co kurs buduje ręcznie.</p>
+        <div class="snip"><div class="snip-h"><span>.claude/agents/wariant.md</span><button class="copy" data-c="---&#10;name: wariant-ui&#10;description: Buduje jeden wariant widoku w izolowanym worktree&#10;isolation: worktree&#10;maxTurns: 25&#10;model: sonnet&#10;---">Kopiuj</button></div><pre>---
+name: wariant-ui
+description: Buduje jeden wariant widoku w izolowanym worktree
+isolation: worktree
+maxTurns: 25
+model: sonnet
+---</pre></div>
+        <p><strong>Co zostaje z lekcji:</strong> uzasadnienie (po co równoległe warianty) i uczciwa ocena skuteczności — autor ocenił swoje pięć wariantów landingu na 6, 7, 3, 5 i 3 na 10. Realny zysk to jeden wariant na pięć. Warto o tym wiedzieć przed odpaleniem pięciu agentów.</p>
+      </div>
+
+      <div class="card risk">
+        <h4><span class="tag risk">Duże</span><code>maxTurns</code> — pas bezpieczeństwa, którego kurs szuka ręcznie</h4>
+        <p>Kurs dwa razy uczy, żeby dopisywać do promptu „zatrzymaj się po 20 turach" — raz przy <code>/goal</code>, raz przy Ralphie. To dobra intuicja, ale realizowana najsłabszą metodą: <strong>prośbą w prompcie</strong>, którą agent może zignorować.</p>
+        <p>Subagent ma pole <code>maxTurns</code> — twardy limit egzekwowany przez klienta, nie sugestia.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Ważne</span>Frontmatter subagenta ma 18 pól, kurs zna 5</h4>
+        <p>Kurs wymienia <code>name</code>, <code>description</code>, <code>model</code>, <code>tools</code>, <code>skills</code>. Poza omówionymi wyżej <code>isolation</code> i <code>maxTurns</code> przeoczone zostały też:</p>
+        <div class="tw"><table>
+          <thead><tr><th>Pole</th><th>Do czego</th></tr></thead>
+          <tbody>
+            <tr><td><code>memory</code></td><td>Subagent ma własną trwałą pamięć (<code>user</code>/<code>project</code>/<code>local</code>) — uczy się między uruchomieniami</td></tr>
+            <tr><td><code>effort</code></td><td>Poziom wysiłku per subagent, nie tylko globalnie — wysoki dla planisty, niski dla wykonawcy</td></tr>
+            <tr><td><code>permissionMode</code></td><td>W tym <code>auto</code> — bezpieczniejsza alternatywa dla trybu YOLO</td></tr>
+            <tr><td><code>disallowedTools</code></td><td>Odejmowanie narzędzi zamiast wyliczania wszystkich dozwolonych</td></tr>
+            <tr><td><code>omitClaudeMd</code></td><td>Start bez plików CLAUDE.md — czysty kontekst dla wąskiego zadania</td></tr>
+            <tr><td><code>hooks</code></td><td>Hooki zakresowane do tego subagenta</td></tr>
+            <tr><td><code>background</code></td><td>Trzymanie w tle bez ręcznego Ctrl+B</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Ważne</span><code>permissions.deny</code> — właściwe narzędzie do twardej blokady</h4>
+        <p>Kurs pokazuje blokowanie plików wrażliwych przez hooka. To działa, ale jest tylko połową obrazu. Dokumentacja stawia hierarchię, której kurs nie formułuje:</p>
+        <div class="tw"><table>
+          <thead><tr><th>Warstwa</th><th>Siła</th><th>Kiedy</th></tr></thead>
+          <tbody>
+            <tr><td>CLAUDE.md, rules</td><td>sugestia — Claude może zignorować</td><td>konwencje, styl, kontekst</td></tr>
+            <tr><td>hook PreToolUse</td><td>egzekwowane przez klienta</td><td>warunkowa blokada z własną logiką</td></tr>
+            <tr><td><code>permissions.deny</code></td><td>egzekwowane przez klienta</td><td>twarda, bezwarunkowa blokada</td></tr>
+          </tbody>
+        </table></div>
+        <blockquote><p>„Claude treats them as <strong>context, not enforced configuration</strong>. To block an action regardless of what Claude decides, use a PreToolUse hook instead."</p><cite>code.claude.com/docs/en/memory</cite></blockquote>
+      </div>
+    </section>
+
+    <section id="bezpieczenstwo" data-t="Bezpieczeństwo">
+      <div class="eyebrow">Tu bym się nie zgodził z autorem</div>
+      <h2>Trzy rekomendacje, których bym nie powtarzał</h2>
+
+      <div class="card risk">
+        <h4><span class="tag risk">1</span>Tryb YOLO jako domyślny sposób pracy</h4>
+        <p>Kurs rekomenduje <code>--dangerously-skip-permissions</code> w co najmniej czterech miejscach: przy uprawnieniach („ja sam często tak pracuję"), przy Gicie, przy <code>/goal</code> i przy sterowaniu z telefonu. Rozumiem motywację — pytania o zgodę co chwilę realnie przeszkadzają.</p>
+        <p>Ale istnieje <strong>auto mode</strong>, który rozwiązuje ten sam problem bez oddawania pełnych praw. Kurs wspomina go raz, mimochodem, jako równorzędny z bypassem. Nie jest równorzędny — Anthropic opisuje go wprost jako <em>bezpieczniejszy sposób pomijania uprawnień</em>.</p>
+        <p><strong>Moja rekomendacja:</strong> auto mode jako domyślny. Bypass tylko w izolowanym, jednorazowym środowisku, w którym nie masz nic do stracenia.</p>
+      </div>
+
+      <div class="card risk">
+        <h4><span class="tag risk">2</span>Bypass + sterowanie z komunikatora = zły pomysł</h4>
+        <p>Najbardziej ryzykowna rekomendacja w kursie. Scenariusz: konfigurujesz bota na Telegramie lub Discordzie, uruchamiasz sesję z <code>--dangerously-skip-permissions</code>, wychodzisz z domu i sterujesz agentem z telefonu.</p>
+        <p>Czyli: <strong>agent z pełnymi prawami na twoim komputerze, sterowany przez komunikator, gdy ciebie przy nim nie ma.</strong> Kurs jako zabezpieczenie podaje allow listę (kto może pisać do bota) i ochronę tokena. To za mało — nie adresuje przypadku, w którym agent przetwarza treść z zewnątrz i ta treść zawiera instrukcje.</p>
+        <p><strong>Moja rekomendacja:</strong> jeśli chcesz pracować zdalnie, użyj sesji w chmurze zamiast dawać pełne prawa procesowi na maszynie z twoimi danymi.</p>
+      </div>
+
+      <div class="card risk">
+        <h4><span class="tag risk">3</span>Milion skilli z niezweryfikowanych źródeł</h4>
+        <p>Kurs poleca trzy zewnętrzne biblioteki skilli — łącznie od 91 tysięcy do niemal miliona pozycji — i <strong>sam podnosi kwestię bezpieczeństwa</strong>, co jest na plus. Proponowana weryfikacja: autor, gwiazdki, komentarze, podgląd źródła i wklejenie linku do Claude'a z prośbą o sprawdzenie.</p>
+        <p>To rozsądne minimum, ale niewystarczające. Skill to instrukcja wstrzykiwana do kontekstu twojego agenta. Przegląd przez samego agenta jest kontrolą przez to samo narzędzie, które ma być chronione.</p>
+        <p><strong>Moja rekomendacja:</strong> traktuj instalację skilla jak instalację zależności z npm. Instaluj ze scope'em <code>project</code>, nie <code>user</code>. Czytaj sam, zwłaszcza sekcje wykonujące skrypty. Przy czymkolwiek dotykającym sekretów, deploymentu albo sieci — pisz własny.</p>
+      </div>
+    </section>
+
+    <section id="liczby" data-t="Koszty i czasy">
+      <div class="eyebrow">Realne pomiary z materiału</div>
+      <h2>Ile to naprawdę kosztuje i trwa</h2>
+      <p>Na plus dla kursu: podaje twarde liczby, także wtedy, gdy są niewygodne. To rzadkie i pozwala policzyć, czy cię na to stać.</p>
+
+      <div class="tw"><table>
+        <thead><tr><th>Operacja</th><th>Czas</th><th>Tokeny</th><th>Kontekst</th></tr></thead>
+        <tbody>
+          <tr><td>Subagent — audyt bezpieczeństwa</td><td class="num">3 min</td><td class="num">65 tys.</td><td>jedno zadanie</td></tr>
+          <tr><td>Workflow — 3 agentów sprawdza kod</td><td class="num">kilka min</td><td class="num">150 tys.</td><td>bugi, czytelność, martwy kod</td></tr>
+          <tr><td>Workflow — pokrycie projektu testami</td><td class="num">15 min</td><td class="num">~500 tys.</td><td>8 agentów, ~50 tys. każdy</td></tr>
+          <tr><td>Ralph Wiggum — prosta apka mobilna</td><td class="num">53 min</td><td class="num">—</td><td>18 zadań, pętla autonomiczna</td></tr>
+          <tr><td>Autopilot — etap E1 apki</td><td class="num">2,5 h</td><td class="num">—</td><td>bez nadzoru</td></tr>
+          <tr><td>Autopilot — dwa etapy naraz</td><td class="num">5–6 h</td><td class="num">—</td><td>„jeszcze w nocy pracował"</td></tr>
+          <tr><td>Agent Teams — apka od zera</td><td class="num">~30 min</td><td class="num">bardzo dużo</td><td>„ekstremalnie token-żerne"</td></tr>
+          <tr><td>Własne eksperymenty autora z workflow</td><td class="num">—</td><td class="num">kilkanaście mln</td><td>ostrzeżenie dla planów Pro</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Uwaga</span>Ekonomia kursu opiera się na jednym założeniu</h4>
+        <p>Autor pracuje na najwyższym planie i deklaruje zużycie kredytów rzędu kilkuset do kilku tysięcy dolarów miesięcznie przy stałej opłacie abonamentowej. Na tym opiera argument, że subskrypcja jest wielokrotnie tańsza niż API — i to jest prawda.</p>
+        <p>Ale <strong>cały pipeline kursu jest zaprojektowany pod ten poziom limitów</strong>. Autopilot działający 5 godzin, workflow palące pół miliona tokenów, zespoły agentów — na niższym planie wyczerpiesz limit w połowie zadania. Autor sam to mówi przy Agent Teams i przy Dynamic Workflows, ale nie wyciąga wniosku ogólnego.</p>
+        <p><strong>Wniosek:</strong> na niższym planie rób ten sam proces <em>ręcznie, etap po etapie</em>. Metoda działa bez autopilota — autopilot tylko ją automatyzuje.</p>
+      </div>
+
+      <div class="card info">
+        <h4><span class="tag info">Koszty poboczne</span>Czego kurs nie sumuje w jednym miejscu</h4>
+        <p>Poza subskrypcją Claude, moduł mobilny zakłada: <strong>CodeRabbit</strong> (płatny, jest trial), <strong>Mobbin</strong> (płatny kwartalnie), <strong>Kie.ai</strong> (płatny, generowanie grafik i wideo), <strong>Apple Developer</strong> (99 USD/rok), <strong>Google Play</strong> (25 USD jednorazowo). Do tego numer DUNS dla konta firmowego Apple — darmowy, ale jego nadanie zajmuje kilka dni.</p>
+      </div>
+
+      <h3>Porównanie mechanizmów — skala i koszt</h3>
+      <p>Ta tabela jest z kursu i jest dobra. Uzupełniłem ją o kolumnę „kiedy nie".</p>
+      <div class="tw"><table>
+        <thead><tr><th>Mechanizm</th><th>Czym jest</th><th>Skala</th><th>Kiedy nie</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Zwykła sesja</strong></td><td>jedna rozmowa</td><td class="num">1 wątek</td><td>gdy zadanie nie mieści się w jednym kontekście</td></tr>
+          <tr><td><strong>Skill</strong></td><td>instrukcja — <em>jak</em> pracować</td><td class="num">brak skali</td><td>gdy chodzi o odciążenie kontekstu — skill go zużywa</td></tr>
+          <tr><td><strong>Subagent</strong></td><td>wykonawca — <em>kto</em> pracuje</td><td class="num">kilkanaście</td><td>zadanie na kilka sesji — subagent ma jedno okno</td></tr>
+          <tr><td><strong>Agent Teams</strong></td><td>niezależne sesje + skrzynka</td><td class="num">lider + kilku</td><td>eksperymentalne, bardzo drogie, bywa niestabilne</td></tr>
+          <tr><td><strong>Dynamic Workflow</strong></td><td>skrypt JS orkiestrujący agentów</td><td class="num">setki</td><td>proste zadania — narzut przewyższa zysk</td></tr>
+          <tr><td><strong>/goal</strong></td><td>pętla do spełnienia warunku</td><td class="num">1 + kontroler</td><td>gdy nie ma mierzalnego końca</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="prawda" data-t="Granice autonomii">
+      <div class="eyebrow">Najważniejszy dowód w materiale</div>
+      <h2>Gdzie autonomia się kończy</h2>
+      <p>Kurs sprzedaje autopilota, ale — i to jest jego największa zaleta — <strong>nie ukrywa, gdzie ten autopilot zawodzi</strong>. Zebrałem wszystkie awarie z transkrypcji, bo razem tworzą spójny obraz.</p>
+
+      <div class="card risk">
+        <h4><span class="tag risk">Dowód A</span>Cztery warstwy kontroli nie wyłapały, że główny ekran nie działa</h4>
+        <p>Etap E3. Autopilot przeszedł: własne review przez pięciu subagentów, testy jednostkowe, testy end-to-end w Maestro. Wynik: zielono. Potem autor kliknął w aplikację jak użytkownik i znalazł:</p>
+        <ul>
+          <li><strong>Cele nie pojawiały się na dashboardzie.</strong> Claude po sprawdzeniu potwierdził: „to prawdziwy bug, nie problem z danymi — w bazie cele są zapisane poprawnie". Czyli główna funkcja aplikacji nie działała.</li>
+          <li>Punkty nie były poprawnie zliczane w bazie.</li>
+          <li>Kolejka offline nie wypchnęła się po powrocie internetu — czyli synchronizacja offline, kluczowa funkcja etapu, nie działała.</li>
+        </ul>
+        <p><strong>Wniosek:</strong> ręczna weryfikacja operatorska nie jest opcjonalna. Nigdy. To nie jest kwestia niedopracowanego pipeline'u — to kwestia tego, że testy sprawdzają, czy kod robi to, co napisano w teście, a nie czy produkt działa.</p>
+      </div>
+
+      <div class="card risk">
+        <h4><span class="tag risk">Dowód B</span>Agent pomylił środowiska bazodanowe</h4>
+        <p>Etap E4/E5. Autopilot wykonał <strong>wszystkie migracje bazy na bazę testową</strong> zamiast na deweloperską. Autor: <em>„w etapie operatora, to była cała faza A, nie zauważyłem tego"</em>. Wychwycił to dopiero Claude przy podsumowaniu.</p>
+        <p>W innej lekcji ten sam klasa błędu: plik <code>.env.local</code> wskazywał na bazę E2E zamiast deweloperskiej. <strong>Dwa razy w jednym kursie</strong> — to nie przypadek, to systemowa słabość.</p>
+        <p><strong>Wniosek dla ciebie:</strong> agent nigdy nie powinien mieć poświadczeń do bazy produkcyjnej. Nie „nie powinien jej ruszać" — nie powinien mieć do niej dostępu w ogóle.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Dowód C</span>Zewnętrzne review znalazło 6 błędów po przejściu wewnętrznego</h4>
+        <p>Etap E1. Po dwóch i pół godzinie autopilota, który zawiera własne review, CodeRabbit na pull requeście znalazł <strong>sześć kolejnych błędów</strong>, część oznaczonych jako poważne.</p>
+        <p>To najmocniejszy empiryczny argument w całym kursie: <strong>agent sprawdzający sam siebie nie wystarcza</strong>. Niezależne narzędzie łapie to, czego pętla self-review nie widzi — bo pracuje na innym modelu, z innym promptem i bez kontekstu tego, co autor „chciał" napisać.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Dowód D</span>Bramka, która miała pilnować, sama miała błąd</h4>
+        <p>Autor zapomniał skonfigurować środowisko testów E2E przed uruchomieniem autopilota. Strażnik, który miał to wykryć, <strong>miał błąd i przepuścił</strong>. Autopilot zatrzymywał się, poprawiał i zjadł ogromną ilość kontekstu.</p>
+        <p>Do naprawy po fakcie. Wniosek prosty: bramki też trzeba testować.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Dowód E</span>Kod, którego nikt nie rozumie</h4>
+        <p>Modele wideo nie generują przezroczystego tła. Claude napisał skrypt w Pythonie, żeby je usunąć. Komentarz autora:</p>
+        <blockquote><p>„Nie pytajcie mnie, jaki to jest skrypt, ponieważ ja też go nie znam. Po prostu poprosiłem go, żeby osiągnął konkretny cel, mógł go zwalidować i wykonał dla mnie tę pracę."</p></blockquote>
+        <p>To jest uczciwe i w tym akurat przypadku nieszkodliwe — skrypt do przycinania grafik. Ale to jest też esencja ryzyka: działający kod, którego nikt nie rozumie i nikt nie utrzyma. Granica przebiega tam, gdzie kod dotyka danych, pieniędzy albo bezpieczeństwa.</p>
+      </div>
+    </section>
+
+    <section id="wdrozenie" data-t="Co wdrożyć">
+      <div class="eyebrow">Plan działania</div>
+      <h2>Co wdrożyć u siebie — i w jakiej kolejności</h2>
+      <p>Postępy zapisują się w tej przeglądarce. Zacznij od pierwszej listy — daje najwięcej za najmniej.</p>
+
+      <h3>Tydzień pierwszy — zero infrastruktury</h3>
+      <div class="checks" data-list="t1">
+        <div class="chk"><input type="checkbox" id="a1"><label for="a1"><b>Wprowadź nawyk <code>/clear</code> po każdym zadaniu</b><em>Najtańsza rada z całego kursu. Nie kontynuuj w tym samym oknie tylko dlatego, że zostało miejsce.</em></label></div>
+        <div class="chk"><input type="checkbox" id="a2"><label for="a2"><b>Sprawdź <code>/context</code> w środku typowej sesji</b><em>Zobacz rozbicie: ile zjada system prompt, narzędzia MCP, skille, wiadomości. Wyłącz serwery MCP, których nie używasz w danym projekcie.</em></label></div>
+        <div class="chk"><input type="checkbox" id="a3"><label for="a3"><b>Utwórz <code>CLAUDE.md</code> dla aktywnego projektu</b><em>Przez <code>/init</code>, potem przeczytaj i przytnij. Cel: poniżej 200 linii. Nie wrzucaj tego, co Claude odczyta z kodu.</em></label></div>
+        <div class="chk"><input type="checkbox" id="a4"><label for="a4"><b>Poproś o audyt sesji pod kątem skilli</b><em>„Przejrzyj projekt, historię commitów i logi sesji, znajdź powtarzalne czynności warte opakowania w skill." Nic nie kosztuje.</em></label></div>
+        <div class="chk"><input type="checkbox" id="a5"><label for="a5"><b>Przestaw się z bypassu na auto mode</b><em>Jeśli pracujesz z <code>--dangerously-skip-permissions</code>. Ten sam komfort, bez oddawania pełnych praw.</em></label></div>
+        <div class="prog"><div class="bar"><i></i></div><span></span></div>
+      </div>
+
+      <h3>Miesiąc pierwszy — proces</h3>
+      <div class="checks" data-list="m1">
+        <div class="chk"><input type="checkbox" id="b1"><label for="b1"><b>Zbuduj własny skill roastujący</b><em>Nie kupuj — napisz. Wzorzec masz w sekcji „Rdzeń metody": jedno pytanie naraz, rekomendacja z uzasadnieniem, skan repo przed pytaniem, konkretne scenariusze zamiast abstrakcji.</em></label></div>
+        <div class="chk"><input type="checkbox" id="b2"><label for="b2"><b>Wprowadź podział pracy na etapy z plikami zadań</b><em>Jeden etap = jedna sesja = czysty kontekst. Stan w plikach markdown z checkboxami, nie w pamięci agenta.</em></label></div>
+        <div class="chk"><input type="checkbox" id="b3"><label for="b3"><b>Wydziel <code>.claude/rules/</code> z warunkowym <code>paths</code></b><em>Gdy CLAUDE.md puchnie. Reguły dla backendu nie muszą ładować się, gdy dotykasz frontendu.</em></label></div>
+        <div class="chk"><input type="checkbox" id="b4"><label for="b4"><b>Wprowadź niezależne review przed merge</b><em>CodeRabbit albo inny model. Dowód C pokazuje, ile łapie po przejściu wewnętrznego review. To nie jest luksus.</em></label></div>
+        <div class="chk"><input type="checkbox" id="b5"><label for="b5"><b>Ustal checklistę operatora dla siebie</b><em>Lista rzeczy, które sprawdzasz ręcznie po każdym większym etapie. Kliknięcie w produkt jak użytkownik jest jej pierwszym punktem.</em></label></div>
+        <div class="chk"><input type="checkbox" id="b6"><label for="b6"><b>Odetnij agentowi dostęp do produkcji</b><em>Oddzielne poświadczenia dla środowiska deweloperskiego. Dowód B pokazuje, że pomyłka środowisk zdarza się realnie.</em></label></div>
+        <div class="prog"><div class="bar"><i></i></div><span></span></div>
+      </div>
+
+      <h3>Gdy proces już stoi — automatyzacja</h3>
+      <div class="checks" data-list="zaaw">
+        <div class="chk"><input type="checkbox" id="c1"><label for="c1"><b>Dodaj <code>maxTurns</code> i <code>isolation: worktree</code> do subagentów</b><em>Zamiast proszenia w prompcie o limit tur. Twardy limit egzekwowany przez klienta.</em></label></div>
+        <div class="chk"><input type="checkbox" id="c2"><label for="c2"><b>Hook na zakończenie długiego zadania</b><em>Powiadomienie, gdy autopilot skończy po dwóch godzinach. Event <code>Stop</code>. Plugin Hookify wygeneruje to z opisu.</em></label></div>
+        <div class="chk"><input type="checkbox" id="c3"><label for="c3"><b><code>permissions.deny</code> na pliki wrażliwe</b><em>Nie hook — hook to warunkowa logika. Do twardej blokady służy deny.</em></label></div>
+        <div class="chk"><input type="checkbox" id="c4"><label for="c4"><b>Mechanizm nauczonych wzorców</b><em>Plik, do którego po każdym rozwiązanym problemie trafia reguła. Wczytywany przez <code>.claude/rules/</code>. Tak działa <code>dev-compound</code>.</em></label></div>
+        <div class="chk"><input type="checkbox" id="c5"><label for="c5"><b>Rozważ <code>/goal</code> zamiast Ralpha</b><em>Oficjalna funkcja zamiast zewnętrznego dodatku. Warunek musi być mierzalny: „przechodzące testy", nie „ma być ładnie". Limit 4000 znaków.</em></label></div>
+        <div class="prog"><div class="bar"><i></i></div><span></span></div>
+      </div>
+    </section>
+
+    <section id="prompty" data-t="Gotowe prompty">
+      <div class="eyebrow">Do skopiowania</div>
+      <h2>Prompty, które wyciągnąłem z materiału</h2>
+      <p>Przepisane tak, żeby działały poza kontekstem kursu — bez jego skilli i nazewnictwa.</p>
+
+      <div class="snip">
+        <div class="snip-h"><span>Odwrócone pytanie — przed startem etapu</span><button class="copy" data-c="Zanim zaczniemy implementację tego etapu, wypisz mi, co muszę przygotować po swojej stronie, żebyś mógł go wykonać bez zatrzymywania się.&#10;&#10;Rozbij odpowiedź na trzy sekcje:&#10;1. CO MUSZĘ PRZYGOTOWAĆ — bez tego nie ruszysz&#10;2. CO JUŻ MAM — znalezione w repo, nie proś mnie o to ponownie&#10;3. CO NIE BLOKUJE, ALE PRZYSPIESZY&#10;&#10;Przy każdej pozycji napisz jednym zdaniem, po co ci to.">Kopiuj</button></div>
+        <pre>Zanim zaczniemy implementację tego etapu, wypisz mi, co muszę
+przygotować po swojej stronie, żebyś mógł go wykonać bez
+zatrzymywania się.
+
+Rozbij odpowiedź na trzy sekcje:
+1. CO MUSZĘ PRZYGOTOWAĆ — bez tego nie ruszysz
+2. CO JUŻ MAM — znalezione w repo, nie proś mnie o to ponownie
+3. CO NIE BLOKUJE, ALE PRZYSPIESZY
+
+Przy każdej pozycji napisz jednym zdaniem, po co ci to.</pre>
+      </div>
+
+      <div class="snip">
+        <div class="snip-h"><span>Adwersarialny przegląd planu</span><button class="copy" data-c="Przejrzyj ten plan linijka po linijce i szukaj w nim dziur.&#10;&#10;Interesują mnie: błędy logiczne, sprzeczności wewnętrzne, założenia przyjęte bez uzasadnienia, przypadki brzegowe pominięte w projekcie, oraz decyzje, które za dwa etapy wymuszą przepisanie czegoś, co teraz wygląda niewinnie.&#10;&#10;Posortuj znaleziska na trzy poziomy:&#10;- TIER 1: realne ryzyko dużego reworku&#10;- TIER 2: wymaga poprawki, ale nie przepisania&#10;- TIER 3: drobiazgi i notatki&#10;&#10;Zasady rozmowy:&#10;- zadawaj JEDNO pytanie naraz i czekaj na odpowiedź&#10;- przy każdym pytaniu podaj swoją rekomendowaną odpowiedź z uzasadnieniem&#10;- jeśli odpowiedź jest w repo lub w dokumentacji, sprawdź sam zamiast pytać&#10;- zamiast abstrakcji podawaj konkretny scenariusz: 'co się dzieje, gdy...'&#10;- pisz jak do osoby z biznesu: dlaczego to jest błąd i co proponujesz">Kopiuj</button></div>
+        <pre>Przejrzyj ten plan linijka po linijce i szukaj w nim dziur.
+
+Interesują mnie: błędy logiczne, sprzeczności wewnętrzne,
+założenia przyjęte bez uzasadnienia, przypadki brzegowe pominięte
+w projekcie, oraz decyzje, które za dwa etapy wymuszą przepisanie
+czegoś, co teraz wygląda niewinnie.
+
+Posortuj znaleziska na trzy poziomy:
+- TIER 1: realne ryzyko dużego reworku
+- TIER 2: wymaga poprawki, ale nie przepisania
+- TIER 3: drobiazgi i notatki
+
+Zasady rozmowy:
+- zadawaj JEDNO pytanie naraz i czekaj na odpowiedź
+- przy każdym pytaniu podaj swoją rekomendowaną odpowiedź
+  z uzasadnieniem
+- jeśli odpowiedź jest w repo lub w dokumentacji, sprawdź sam
+  zamiast pytać
+- zamiast abstrakcji podawaj konkretny scenariusz:
+  "co się dzieje, gdy..."
+- pisz jak do osoby z biznesu: dlaczego to jest błąd
+  i co proponujesz</pre>
+      </div>
+
+      <div class="snip">
+        <div class="snip-h"><span>Obsługa uwag z zewnętrznego review</span><button class="copy" data-c="Spójrz na uwagi z review. Dla każdej z nich:&#10;&#10;1. Zweryfikuj, czy jest ZASADNA — nie wykonuj ich ślepo, część może być fałszywym alarmem. Napisz wprost, z którymi się nie zgadzasz i dlaczego.&#10;2. Uporządkuj od najpoważniejszych do najmniej poważnych.&#10;3. Przy każdej napisz JEDNYM ZDANIEM, tak jakbyś tłumaczył osobie z biznesu, dlaczego musimy to poprawić i co się stanie, jeśli tego nie zrobimy.&#10;4. Oddziel te, które dotyczą kodu, od tych, które dotyczą brakujących testów — to dwa różne rodzaje naprawy.&#10;&#10;Nie zaczynaj poprawiać, dopóki nie wskażę, które biorę.">Kopiuj</button></div>
+        <pre>Spójrz na uwagi z review. Dla każdej z nich:
+
+1. Zweryfikuj, czy jest ZASADNA — nie wykonuj ich ślepo, część
+   może być fałszywym alarmem. Napisz wprost, z którymi się nie
+   zgadzasz i dlaczego.
+2. Uporządkuj od najpoważniejszych do najmniej poważnych.
+3. Przy każdej napisz JEDNYM ZDANIEM, tak jakbyś tłumaczył
+   osobie z biznesu, dlaczego musimy to poprawić i co się
+   stanie, jeśli tego nie zrobimy.
+4. Oddziel te, które dotyczą kodu, od tych, które dotyczą
+   brakujących testów — to dwa różne rodzaje naprawy.
+
+Nie zaczynaj poprawiać, dopóki nie wskażę, które biorę.</pre>
+      </div>
+
+      <div class="snip">
+        <div class="snip-h"><span>Checklista operatora po autonomicznym etapie</span><button class="copy" data-c="Etap jest zakończony. Zanim zrobię merge, przygotuj mi checklistę operatora — listę rzeczy, które MUSZĘ sprawdzić ręcznie, bo ty nie jesteś w stanie ich zweryfikować.&#10;&#10;Rozbij ją na sekcje i przy każdej zaznacz, kto wykonuje:&#10;- [AGENT] punkty, które możesz odhaczyć sam, wykonując polecenia&#10;- [CZŁOWIEK] punkty wymagające mojej oceny — wygląd, przepływ, wrażenie&#10;&#10;Wszystko oznaczone [AGENT] wykonaj teraz i odhacz. Moją pracę sprowadź do minimum.&#10;&#10;Przy każdym punkcie dla mnie napisz, czego dokładnie mam się spodziewać, żebym wiedział, czy to, co widzę, jest poprawne.">Kopiuj</button></div>
+        <pre>Etap jest zakończony. Zanim zrobię merge, przygotuj mi checklistę
+operatora — listę rzeczy, które MUSZĘ sprawdzić ręcznie, bo ty
+nie jesteś w stanie ich zweryfikować.
+
+Rozbij ją na sekcje i przy każdej zaznacz, kto wykonuje:
+- [AGENT] punkty, które możesz odhaczyć sam, wykonując polecenia
+- [CZŁOWIEK] punkty wymagające mojej oceny — wygląd, przepływ,
+  wrażenie
+
+Wszystko oznaczone [AGENT] wykonaj teraz i odhacz.
+Moją pracę sprowadź do minimum.
+
+Przy każdym punkcie dla mnie napisz, czego dokładnie mam się
+spodziewać, żebym wiedział, czy to, co widzę, jest poprawne.</pre>
+      </div>
+
+      <div class="snip">
+        <div class="snip-h"><span>Audyt pod kątem własnych skilli</span><button class="copy" data-c="Przejrzyj ten projekt, historię commitów i logi moich poprzednich sesji.&#10;&#10;Znajdź czynności, które powtarzam — takie, które za każdym razem opisuję ci od nowa własnymi słowami, albo takie, przy których regularnie popełniasz ten sam błąd.&#10;&#10;Dla każdej propozycji podaj:&#10;- co dokładnie się powtarza i ile razy to widzisz&#10;- co konkretnie zyskam, jeśli opakuję to w skill&#10;- czy to w ogóle jest materiał na skill, czy raczej na regułę w .claude/rules/&#10;&#10;Posortuj po tym, ile realnie oszczędzi. Nie proponuj na siłę — jeśli nic sensownego nie widzisz, powiedz to wprost.">Kopiuj</button></div>
+        <pre>Przejrzyj ten projekt, historię commitów i logi moich poprzednich
+sesji.
+
+Znajdź czynności, które powtarzam — takie, które za każdym razem
+opisuję ci od nowa własnymi słowami, albo takie, przy których
+regularnie popełniasz ten sam błąd.
+
+Dla każdej propozycji podaj:
+- co dokładnie się powtarza i ile razy to widzisz
+- co konkretnie zyskam, jeśli opakuję to w skill
+- czy to w ogóle jest materiał na skill, czy raczej na regułę
+  w .claude/rules/
+
+Posortuj po tym, ile realnie oszczędzi. Nie proponuj na siłę —
+jeśli nic sensownego nie widzisz, powiedz to wprost.</pre>
+      </div>
+    </section>
+
+    <section id="twoje" data-t="Twoje projekty">
+      <div class="eyebrow">Zastosowanie</div>
+      <h2>Jak to przełożyć na twoje aplikacje</h2>
+
+      <div class="card info">
+        <h4><span class="tag brass">Do uzupełnienia</span>Konstruktor — czekam na materiały</h4>
+        <p>Nie widziałem jeszcze kodu ani opisu <strong>konstruktora</strong>, więc nie będę zgadywał. Gdy go podeślesz — najlepiej jako repozytorium, wtedy przeczytam strukturę, stack, testy i istniejącą konfigurację — dopiszę tu osobną sekcję z konkretami: co z tego pipeline'u ma sens u ciebie, w jakiej kolejności i czego nie robić.</p>
+        <p>Do tego czasu poniższe zasady są uniwersalne.</p>
+      </div>
+
+      <h3>Co przenosi się na każdy projekt</h3>
+      <div class="card ok">
+        <h4><span class="tag ok">1</span>Podział na etapy jest ważniejszy niż narzędzia</h4>
+        <p>Cała reszta to implementacja tej jednej zasady. Jeden etap = jedna sesja = czysty kontekst = plik z checkboxami jako stan. Możesz to robić bez jednego skilla z kursu — zwykłym plikiem markdown i dyscypliną.</p>
+        <p><strong>Wybierz etapy pionowo, nie poziomo.</strong> Etap to działający przepływ od interfejsu do bazy, nie „cała warstwa danych". Autor wybiera tak świadomie i ma rację — pionowe plastry dają szybszy feedback i wcześniej ujawniają błędy integracji.</p>
+      </div>
+
+      <div class="card ok">
+        <h4><span class="tag ok">2</span>Roastuj plan dwa razy, w dwóch różnych momentach</h4>
+        <p>Raz na tym, <em>co</em> budujesz. Raz na tym, <em>w jakiej kolejności</em>. Drugi moment jest mniej oczywisty i tam w kursie wyszły najdroższe błędy — bo kolejność implementacji przesądza o strukturze danych.</p>
+      </div>
+
+      <div class="card ok">
+        <h4><span class="tag ok">3</span>Instrumentacja przed kodem, nie po</h4>
+        <p>Lista zdarzeń analitycznych i monitoring błędów wchodzą do planu <strong>przed</strong> pierwszą linijką. „Danych nie da się dorobić wstecz" to prawda, która boli dopiero po trzech miesiącach.</p>
+      </div>
+
+      <div class="card ok">
+        <h4><span class="tag ok">4</span><code>design.md</code> nawet jeśli nie robisz mobile</h4>
+        <p>Problem rozjeżdżającego się stylu między sesjami dotyczy każdego projektu z interfejsem. Plik z twardymi wartościami i uzasadnieniami rozwiązuje go taniej niż jakikolwiek system komponentów.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Czego nie kopiować</span>Trzy rzeczy z kursu, które zostaw</h4>
+        <ul>
+          <li><strong>Autopilota na starcie.</strong> Najpierw przejdź ten proces ręcznie kilka razy. Jeśli nie wiesz, co pipeline robi, nie zauważysz, gdy zrobi to źle — a dowody A–E pokazują, że zrobi.</li>
+          <li><strong>Agent Teams do zwykłej pracy.</strong> Eksperymentalne, bardzo drogie, bywa niestabilne. Ciekawe, ale nie do produkcji.</li>
+          <li><strong>Trybu YOLO.</strong> Auto mode daje ten sam komfort bez oddawania pełnych praw.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="narzedzia" data-t="Narzędzia">
+      <div class="eyebrow">Ekosystem</div>
+      <h2>Narzędzia z kursu — co z tego brać</h2>
+      <div class="tw"><table>
+        <thead><tr><th>Narzędzie</th><th>Do czego</th><th>Moja ocena</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Supabase</strong></td><td>baza, autoryzacja, storage, funkcje brzegowe</td><td>Bierz. Darmowy plan wystarcza na start, MCP eliminuje klikanie w panelu.</td></tr>
+          <tr><td><strong>Sentry</strong></td><td>monitoring błędów</td><td>Bierz. Najlepszy zwrot z czasu wdrożenia. Można podpiąć do agenta, żeby sam czytał błędy.</td></tr>
+          <tr><td><strong>PostHog</strong></td><td>analityka produktowa</td><td>Bierz, ale świadomie odrzuć Session Replay, jeśli go nie potrzebujesz — mniej danych osobowych, mniej ryzyka.</td></tr>
+          <tr><td><strong>CodeRabbit</strong></td><td>review pull requestów</td><td>Rozważ. Płatny, ale dowód C pokazuje, ile realnie łapie. Jest trial — sprawdź na jednym PR.</td></tr>
+          <tr><td><strong>design.md</strong> (Google Labs)</td><td>spójność wizualna między sesjami</td><td>Bierz. Darmowe, koncepcyjne, działa wszędzie.</td></tr>
+          <tr><td><strong>Playwright MCP</strong></td><td>agent klika po własnej stronie i ocenia</td><td>Bierz przy pracy z frontendem. Zamyka pętlę sprzężenia zwrotnego.</td></tr>
+          <tr><td><strong>claude-powerline</strong></td><td>pasek statusu: model, tokeny, koszt, kontekst</td><td>Bierz. Drobiazg, ale widoczność zużycia kontekstu zmienia nawyki.</td></tr>
+          <tr><td><strong>Remotion</strong></td><td>wideo i animacje generowane kodem</td><td>Nisza, ale jeśli robisz materiały promocyjne — bardzo dobre. Plik z promptami wart przeczytania niezależnie.</td></tr>
+          <tr><td><strong>Mobbin, Kie.ai, Figma MCP</strong></td><td>inspiracje UI, generowanie grafik, komponenty</td><td>Płatne, tylko jeśli robisz produkt z własnym designem. Nie na start.</td></tr>
+          <tr><td><strong>Ralph Wiggum / ralph-tui</strong></td><td>pętla autonomiczna „nocna zmiana"</td><td>Pomiń. <code>/goal</code> to oficjalna funkcja robiąca to samo.</td></tr>
+          <tr><td><strong>Ollama</strong></td><td>lokalne modele bez kosztu inferencji</td><td>Pomiń do kodowania. Sam autor mówi: „to jest przepaść, jeżeli chodzi o jakość".</td></tr>
+          <tr><td><strong>Channels</strong> (Telegram/Discord)</td><td>sterowanie agentem z telefonu</td><td>Pomiń w wariancie z kursu. Wymaga żywej sesji na komputerze i bypassu uprawnień.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="mapa" data-t="Mapa kursu">
+      <div class="eyebrow">Struktura materiału</div>
+      <h2>Co gdzie jest — mapa do nawigacji</h2>
+      <p>Jeśli zdecydujesz się oglądać wybiórczo, to jest kolejność, którą bym zaproponował.</p>
+
+      <div class="tw"><table>
+        <thead><tr><th>Moduł</th><th>Lekcje</th><th>Co tam jest</th><th>Priorytet</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1. Podstawy</strong></td><td class="num">9</td><td>instalacja, tryby pracy, uprawnienia, Git, <strong>pamięć i inżynieria kontekstu</strong>, komendy, pluginy</td><td>Wysoki — zwłaszcza #1-5 i #1-7</td></tr>
+          <tr><td><strong>2. Średniozaawansowany</strong></td><td class="num">9</td><td>skille, Skill Creator, <strong>subagenci</strong>, Agent Teams, MCP, hooki, Dynamic Workflows, <code>/goal</code></td><td>Wysoki — #1, #2, #4 to rdzeń</td></tr>
+          <tr><td><strong>3. Aplikacje mobilne</strong></td><td class="num">11</td><td>pełny projekt Nawykometr od PRD do sklepu; React Native, Expo, Supabase, EAS</td><td>Tylko przy projekcie mobilnym — ale #2, #3, #6, #9 warto obejrzeć dla metody</td></tr>
+          <tr><td><strong>4. Dodatki</strong></td><td class="num">10</td><td>Ralph Wiggum, git worktree, Remotion, Channels, Ollama, landing page, trzy live'y</td><td>Wybiórczo — Remotion i landing page najlepsze</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="card info">
+        <h4><span class="tag info">Na plus</span>Materiał jest świeży, nie odgrzewany</h4>
+        <p>Repozytoria kursu są żywe — ostatnie commity z 1 i 6 września 2026, czyli sprzed kilkunastu dni. Plik nauczonych wzorców ma wpisy datowane na czerwiec 2026. Kurs pokrywa funkcje, które są nowe: Dynamic Workflows, <code>/goal</code>, Agent Teams, auto memory, Channels.</p>
+        <p>Problem z aktualnością dotyczy <strong>szczegółów</strong> — nazw modeli, nazw zmiennych, pól frontmattera — a nie koncepcji. To ważne rozróżnienie: koncepcyjnie kurs się nie zestarzeje szybko.</p>
+      </div>
+    </section>
+
+    <div class="nores" id="nores">Brak wyników dla tego zapytania.</div>
+
+    <footer>
+      Analiza wykonana 17.09.2026 na podstawie 5 PDF-ów, 39 transkrypcji lekcji i 8 repozytoriów kodu.<br>
+      Weryfikacja tez wobec code.claude.com/docs — stan na dzień analizy. Nazwy modeli i liczby w ekosystemie zmieniają się szybko; sprawdzaj u źródła.<br>
+      Postępy w checklistach zapisują się lokalnie w tej przeglądarce.
+    </footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var LS={
+    get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
+    set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  };
+
+  /* ---- nav ---- */
+  var secs=[].slice.call(document.querySelectorAll("section[data-t]"));
+  var nav=document.getElementById("sidenav");
+  var links=[];
+  secs.forEach(function(s,i){
+    var a=document.createElement("a");
+    a.href="#"+s.id;
+    a.innerHTML='<span>'+String(i+1).padStart(2,"0")+'</span>'+s.dataset.t;
+    nav.appendChild(a); links.push(a);
+  });
+  var tocm=document.createElement("details");
+  tocm.className="tocm";
+  var ol=secs.map(function(s){return '<li><a href="#'+s.id+'">'+s.dataset.t+'</a></li>'}).join("");
+  tocm.innerHTML='<summary>Spis treści</summary><ol>'+ol+'</ol>';
+  var mainEl=document.querySelector("main");
+  mainEl.insertBefore(tocm,mainEl.firstChild);
+
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting)return;
+        var id=e.target.id;
+        links.forEach(function(l){l.classList.toggle("on",l.getAttribute("href")==="#"+id)});
+      });
+    },{rootMargin:"-80px 0px -65% 0px",threshold:0});
+    secs.forEach(function(s){io.observe(s)});
+  }
+
+  /* ---- copy ---- */
+  document.addEventListener("click",function(ev){
+    var b=ev.target.closest(".copy"); if(!b)return;
+    var txt=b.dataset.c;
+    if(!txt){var pre=b.closest(".snip").querySelector("pre"); txt=pre?pre.textContent:""}
+    var done=function(){b.classList.add("done");var o=b.textContent;b.textContent="Skopiowano";setTimeout(function(){b.classList.remove("done");b.textContent=o},1600)};
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done,function(){fallback(txt,done)});
+    }else{fallback(txt,done)}
+  });
+  function fallback(t,cb){
+    var ta=document.createElement("textarea");ta.value=t;ta.setAttribute("readonly","");
+    ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+    try{document.execCommand("copy");cb()}catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  /* ---- checklists ---- */
+  [].forEach.call(document.querySelectorAll(".checks"),function(box){
+    var key="ccaudit:"+box.dataset.list;
+    var boxes=[].slice.call(box.querySelectorAll('input[type=checkbox]'));
+    var saved=(LS.get(key)||"").split(",");
+    boxes.forEach(function(cb){ if(saved.indexOf(cb.id)>-1) cb.checked=true; });
+    var bar=box.querySelector(".bar i"), lab=box.querySelector(".prog span");
+    function upd(){
+      var n=boxes.filter(function(c){return c.checked}).length;
+      if(bar)bar.style.width=(n/boxes.length*100)+"%";
+      if(lab)lab.textContent=n+" z "+boxes.length+(n===boxes.length?" — komplet":"");
+      LS.set(key,boxes.filter(function(c){return c.checked}).map(function(c){return c.id}).join(","));
+    }
+    boxes.forEach(function(cb){cb.addEventListener("change",upd)});
+    upd();
+  });
+
+  /* ---- filters ---- */
+  [].forEach.call(document.querySelectorAll(".filters"),function(grp){
+    var sec=document.getElementById(grp.dataset.for);
+    var chips=[].slice.call(grp.querySelectorAll(".chip"));
+    chips[0].setAttribute("aria-pressed","true");
+    grp.addEventListener("click",function(ev){
+      var c=ev.target.closest(".chip"); if(!c)return;
+      chips.forEach(function(x){x.setAttribute("aria-pressed",String(x===c))});
+      var f=c.dataset.f;
+      [].forEach.call(sec.querySelectorAll(".card[data-f]"),function(card){
+        card.classList.toggle("hid", f!=="all" && card.dataset.f!==f);
+      });
+    });
+  });
+
+  /* ---- search ---- */
+  var q=document.getElementById("q"), qmeta=document.getElementById("qmeta"), nores=document.getElementById("nores");
+  var units=[].slice.call(document.querySelectorAll("main .card, main .snip, main .tw, main blockquote, main .checks"));
+  units.forEach(function(u){u._txt=(u.textContent||"").toLowerCase()});
+  var t;
+  q.addEventListener("input",function(){
+    clearTimeout(t); t=setTimeout(run,110);
+  });
+  function run(){
+    var v=q.value.trim().toLowerCase();
+    if(!v){
+      units.forEach(function(u){u.classList.remove("hid")});
+      secs.forEach(function(s){s.classList.remove("hid")});
+      tocm.classList.remove("hid");
+      qmeta.textContent=""; nores.style.display="none"; return;
+    }
+    tocm.classList.add("hid");
+    var hits=0;
+    units.forEach(function(u){
+      var m=u._txt.indexOf(v)>-1;
+      u.classList.toggle("hid",!m); if(m)hits++;
+    });
+    secs.forEach(function(s){
+      var vis=s.querySelectorAll("main .card:not(.hid), .snip:not(.hid), .tw:not(.hid), blockquote:not(.hid), .checks:not(.hid)").length;
+      var inHead=(s.querySelector("h2").textContent+" "+s.dataset.t).toLowerCase().indexOf(v)>-1;
+      s.classList.toggle("hid", vis===0 && !inHead);
+    });
+    qmeta.textContent=hits+" "+(hits===1?"trafienie":"trafień");
+    nores.style.display=hits===0?"block":"none";
+  }
+})();
+</script>
