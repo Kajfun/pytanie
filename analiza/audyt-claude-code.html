@@ -200,9 +200,9 @@ footer{border-top:1px solid var(--line);margin-top:46px;padding-top:22px;font-fa
 
   <main>
     <header class="hero">
-      <div class="stamp"><i class="dot"></i> Analiza ukończona &middot; 39/39 transkrypcji</div>
+      <div class="stamp"><i class="dot"></i> 39/39 transkrypcji &middot; makieta Konstruktora przeanalizowana</div>
       <h1>Kurs, który uczy <i>metody</i>, a myli się w <i>szczegółach</i></h1>
-      <p class="lede">Przeczytałem całą Akademię Claude Code — opisy lekcji, wszystkie transkrypcje i realny kod ośmiu repozytoriów — i skonfrontowałem każdą istotną tezę z aktualną dokumentacją Anthropic. To jest wynik: co działa, co jest przeterminowane, czego kurs nie wie, i co z tym zrobić u siebie.</p>
+      <p class="lede">Przeczytałem całą Akademię Claude Code — opisy lekcji, wszystkie transkrypcje i realny kod ośmiu repozytoriów — i skonfrontowałem każdą istotną tezę z aktualną dokumentacją Anthropic. To jest wynik: co działa, co jest przeterminowane, czego kurs nie wie, i co z tym zrobić u siebie. Na końcu osobna sekcja: <a href="#konstruktor">co z tego stosuje się do Konstruktora</a>.</p>
 
       <div class="tiles">
         <div class="tile"><b>39</b><span>transkrypcji lekcji</span></div>
@@ -211,7 +211,7 @@ footer{border-top:1px solid var(--line);margin-top:46px;padding-top:22px;font-fa
         <div class="tile"><b>33</b><span>subagentów</span></div>
         <div class="tile"><b>11</b><span>tez do korekty</span></div>
       </div>
-      <p class="note">Źródła pierwotne: 5 PDF-ów (62 strony), transkrypcje z Dysku Google, repozytoria <code>workspace-template-mobile</code>, <code>claude-code-zasoby</code>, <code>nawykometr-docs</code>, <code>ralph-tui</code>, <code>design.md</code> i cztery inne. Weryfikacja: code.claude.com/docs, stan na 17.09.2026.</p>
+      <p class="note">Źródła pierwotne: 5 PDF-ów (62 strony), transkrypcje z Dysku Google, repozytoria <code>workspace-template-mobile</code>, <code>claude-code-zasoby</code>, <code>nawykometr-docs</code>, <code>ralph-tui</code>, <code>design.md</code> i cztery inne, oraz <code>makieta-live.html</code> (Konstruktor v2, 6088 linii). Weryfikacja: code.claude.com/docs, stan na 17.09.2026.</p>
     </header>
 
     <section id="werdykt" data-t="Werdykt">
@@ -836,17 +836,103 @@ jeśli nic sensownego nie widzisz, powiedz to wprost.</pre>
       </div>
     </section>
 
-    <section id="twoje" data-t="Twoje projekty">
-      <div class="eyebrow">Zastosowanie</div>
-      <h2>Jak to przełożyć na twoje aplikacje</h2>
+    <section id="konstruktor" data-t="Konstruktor">
+      <div class="eyebrow">Twój projekt</div>
+      <h2>Konstruktor — co widzę w makiecie</h2>
+      <p class="lede">Przeczytałem <code>makieta-live.html</code>: 6088 linii, 141 funkcji, 256 bloków komentarzy. Uruchomiłem ją i obejrzałem wszystkie cztery persony. Poniżej ocena bez kurtuazji — najpierw to, co jest mocne, potem to, co trzeba rozstrzygnąć, zanim to stanie się aplikacją.</p>
 
-      <div class="card info">
-        <h4><span class="tag brass">Do uzupełnienia</span>Konstruktor — czekam na materiały</h4>
-        <p>Nie widziałem jeszcze kodu ani opisu <strong>konstruktora</strong>, więc nie będę zgadywał. Gdy go podeślesz — najlepiej jako repozytorium, wtedy przeczytam strukturę, stack, testy i istniejącą konfigurację — dopiszę tu osobną sekcję z konkretami: co z tego pipeline'u ma sens u ciebie, w jakiej kolejności i czego nie robić.</p>
-        <p>Do tego czasu poniższe zasady są uniwersalne.</p>
+      <div class="tiles">
+        <div class="tile"><b>45</b><span>instrukcji w 9 modułach</span></div>
+        <div class="tile"><b>32</b><span>budowle w izometrii</span></div>
+        <div class="tile"><b>4</b><span>persony w jednym demo</span></div>
+        <div class="tile"><b>0</b><span>błędów JS przy starcie</span></div>
+        <div class="tile"><b>79%</b><span>pliku to wklejone JPEG-i</span></div>
       </div>
 
-      <h3>Co przenosi się na każdy projekt</h3>
+      <h3>Co jest naprawdę dobre</h3>
+
+      <div class="card ok">
+        <h4><span class="tag ok">Kluczowe</span>Architektura stanu wyliczanego — najlepsza decyzja w tym kodzie</h4>
+        <p>Historia sesji jest jedynym źródłem prawdy. Odznaki, punkty i poziom grupy <strong>liczą się z niej</strong>, nie są przechowywane osobno. Łańcuch <code>log → groupBadges() → groupPoints() → levelOf()</code>, i jedno miejsce odpowiada na pytanie „ile grupa umie". Komentarz w kodzie mówi to wprost:</p>
+        <blockquote><p>„Poziom liczy się wyłącznie z historii sesji, więc <strong>nie da się go »przestawić« w danych</strong> — rośnie sam, gdy dopiszemy sesję."</p></blockquote>
+        <p>Teraz spójrz na sekcję o kursie: dokładnie tę klasę problemu adwersarialny przegląd znalazł w Nawykometrze jako błąd wymagający przeprojektowania — integralność punktów, przeliczanie tygodni po nieobecności, ochrona przed oszukiwaniem. <strong>Konstruktor ma to rozwiązane od startu.</strong> To warto wiedzieć, zanim ktoś zaproponuje „uproszczenie" polegające na trzymaniu punktów w kolumnie.</p>
+      </div>
+
+      <div class="card ok">
+        <h4><span class="tag ok">Kluczowe</span>Komentarze opisują awarię, która je wymusiła</h4>
+        <p>Rzadkie i bardzo wartościowe. Nie „ta funkcja przewija stronę", tylko:</p>
+        <blockquote><p>„Ramka urządzenia leży niżej niż przewodnik. Bez przewinięcia klik w krok zmieniał ekran <strong>poza polem widzenia</strong> i wyglądało to na zepsuty przycisk."</p></blockquote>
+        <blockquote><p>„Szprychy tylko pionowa i pozioma — skośnej nie da się złożyć z klocków ustawionych równolegle do osi, a »schodki« psułyby rysunek."</p></blockquote>
+        <p>Komentarz opisujący objaw błędu jest wart dziesięciu opisujących, co robi linijka — i jest bezcenny dla agenta, który za trzy miesiące będzie to zmieniał. To dokładnie to, co w kursie robi mechanizm <code>dev-compound</code>, tylko zrobione ręcznie i lepiej.</p>
+      </div>
+
+      <div class="card ok">
+        <h4><span class="tag ok">Warte</span>Higiena techniczna lepsza, niż sugeruje słowo „makieta"</h4>
+        <ul>
+          <li><strong>Zero <code>onclick</code> w HTML</strong> — pełna delegacja zdarzeń.</li>
+          <li><code>esc()</code> escapuje poprawnie i jest wywołana <strong>108 razy przy 87 przypisaniach <code>innerHTML</code></strong>. Prześledziłem realną ścieżkę treści od użytkownika — wiadomość instruktora trafiająca na tablety dzieci — jest escapowana.</li>
+          <li><strong>251 atrybutów <code>aria-</code></strong> i 15 <code>role</code> — dostępność nie była dopisana na koniec.</li>
+          <li>Polska odmiana przez liczbę zrobiona porządnie, z komentarzem „bez tego wszędzie wychodziło »3 grup«".</li>
+        </ul>
+      </div>
+
+      <div class="card ok">
+        <h4><span class="tag ok">Warte</span>Dojrzałość produktowa, nie tylko wizualna</h4>
+        <p>To nie jest ładny ekran — to przemyślany produkt. Rzeczy, które mnie przekonały:</p>
+        <ul>
+          <li><strong>Test A/B na pojedynczym kroku instrukcji.</strong> Ten sam krok narysowany na dwa sposoby, mierzony średni czas do kliknięcia „dalej". Niewiele zespołów wpada na to, że jednostką eksperymentu może być rysunek.</li>
+          <li><strong>Prośba o pomoc najpierw autodiagnozuje</strong> dwie najczęstsze usterki (lampka huba, kabel), a dopiero „Nadal nie działa" woła prowadzącego — <em>razem z listą tego, co dziecko już sprawdziło</em>.</li>
+          <li><strong>Rzut podpowiedzi na wszystkie tablety naraz</strong>, z uzasadnieniem z sali: „najczęstsze zacięcie nie dotyczy klocków, tylko programu — pięć osób naraz nie wie, gdzie wpiąć pętlę".</li>
+          <li><strong>Szefostwo ma podgląd bez prawa zmiany treści.</strong> Role przemyślane, zanim pojawił się backend.</li>
+          <li>Interfejs świadomy czasu: „trwają zajęcia, zostało 30 min", „za 55 min" — liczone z kalendarza, nie wpisane.</li>
+        </ul>
+        <p>Ktoś to zaprojektował od strony sali lekcyjnej, nie od strony ekranu. To widać.</p>
+      </div>
+
+      <h3>Co trzeba rozstrzygnąć, zanim to stanie się aplikacją</h3>
+
+      <div class="card risk">
+        <h4><span class="tag risk">Ryzyko 1</span>Offline jest zadeklarowany w interfejsie i nieobecny w kodzie</h4>
+        <p>Panel pokazuje kafelek <strong>„96% dostępność offline · bez przestojów"</strong>. W kodzie: zero <code>localStorage</code>, zero <code>fetch</code>, zero IndexedDB, zero service workera. Cała warstwa danych to stałe w pamięci.</p>
+        <p>W makiecie to jest poprawne — makieta ma pokazywać, nie działać. Ale to jest <strong>dokładnie ten błąd, który adwersarialny przegląd w kursie sklasyfikował jako Tier 1</strong>: aplikacja projektowana pod tryb online, offline dopiero w piątym etapie, więc <em>struktura danych będzie inna</em> i trzeba ją przepisać.</p>
+        <p>Tablety w szkolnej świetlicy to środowisko z realnie złym wifi — to nie jest przypadek brzegowy, to przypadek podstawowy. <strong>Offline-first musi wejść do modelu danych na starcie.</strong> Jeśli miałbym wskazać jedną rzecz, na której warto teraz spędzić godzinę rozmowy, to ta.</p>
+      </div>
+
+      <div class="card risk">
+        <h4><span class="tag risk">Ryzyko 2</span>79% pliku to 36 wklejonych JPEG-ów</h4>
+        <p>1,4 miliona znaków base64 na 1,78 MB pliku. Konsekwencje w produkcji: brak cache'owania, brak lazy-loadingu, każda zmiana oznacza ponowne pobranie wszystkiego, i całe to 1,78 MB idzie na tablet w tej samej szkolnej sieci z ryzyka pierwszego.</p>
+        <p>Dobra wiadomość: to jest <strong>zadanie mechaniczne i świetny kandydat na autopilota</strong> — assety do storage, w kodzie referencje. Jedno z niewielu miejsc, gdzie automatyzacja z kursu wchodzi bez zastrzeżeń.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Ryzyko 3</span>Czas stoi na zamrożonym zegarze demo</h4>
+        <p><code>DEMO_CLOCK = {day:1, min: 845}</code> — cała logika „kto ma teraz zajęcia" opiera się na jednej stałej. W makiecie słusznie. W produkcji dochodzą: granice doby, zmiana czasu, sesja trwająca przez północ, instruktor w innej strefie niż placówka.</p>
+        <p>Znów: przegląd Nawykometru w kursie znalazł identyczny problem jako Tier 1. Dwa na dwa — to nie przypadek, to po prostu miejsca, w których aplikacje z kalendarzem zawsze pękają.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Ryzyko 4</span>Jeden plik, 6088 linii — ale nie przepisuj go w ciemno</h4>
+        <p>Dla makiety to zaleta: zero build stepu, otwierasz i działa. Dla aplikacji nie do utrzymania. Ale uwaga na pułapkę: <strong>wartość tego pliku siedzi w modelu danych i w komentarzach</strong>, nie w strukturze. Przy migracji to trzeba przenieść świadomie, a nie wygenerować od nowa i stracić.</p>
+        <p>Konkretnie: 45 instrukcji z opisami i listami części, 9 modułów, system odznak i poziomów, 32 proceduralnie generowane budowle, 95 KB dopracowanego CSS. To jest kapitał, nie balast.</p>
+      </div>
+
+      <h3>Kolejność, którą bym zaproponował</h3>
+      <div class="card info">
+        <h4><span class="tag info">Ważne</span>Makieta jest już lepszym PRD, niż powstawało w kursie</h4>
+        <p>W kursie dokument produktowy rodził się przez godzinę rozmowy z agentem. Ty masz klikalny prototyp z realnymi danymi, przemyślanymi rolami i wyprowadzonym modelem punktacji. <strong>Pierwszy etap kursowego pipeline'u masz za sobą</strong> — i to lepiej zrobiony.</p>
+      </div>
+      <ol>
+        <li><strong>Roast na modelu danych i trybie offline</strong> — nie na wyglądzie, wygląd jest gotowy. Pytania, od których bym zaczął: co się dzieje, gdy tablet traci sieć w połowie sesji? gdy dwoje dzieci odznacza ten sam krok? gdy instruktor kończy sesję, a jeden tablet jest offline? gdy instrukcja zmieni się w zapleczu w trakcie trwania zajęć?</li>
+        <li><strong>Wyciągnij <code>design.md</code> z makiety.</strong> Kolory, typografia, spacing i komponenty już istnieją w tych 95 KB CSS. Spisz je jako źródło prawdy, <em>zanim</em> styl zacznie się rozjeżdżać między sesjami — bo zacznie.</li>
+        <li><strong>Podziel na etapy pionowo, nie po personach.</strong> Kusi, żeby zrobić „najpierw zaplecze, potem instruktora, potem dziecko" — to jest podział poziomy i zemści się. Etap pierwszy: jedna grupa, jedna instrukcja, tablet↔instruktor, offline w modelu danych od początku.</li>
+        <li><strong>Assety z base64 do storage</strong> — osobny, mechaniczny etap. Tu autopilot.</li>
+        <li><strong>Lista zdarzeń analitycznych przed kodem.</strong> Makieta już wie, co mierzyć — statystyki, trudne kroki, test A/B. Spisanie tego zajmie kwadrans, a danych nie da się dorobić wstecz.</li>
+      </ol>
+    </section>
+
+    <section id="twoje" data-t="Zasady ogólne">
+      <div class="eyebrow">Zastosowanie</div>
+      <h2>Co przenosi się na każdy projekt</h2>
       <div class="card ok">
         <h4><span class="tag ok">1</span>Podział na etapy jest ważniejszy niż narzędzia</h4>
         <p>Cała reszta to implementacja tej jednej zasady. Jeden etap = jedna sesja = czysty kontekst = plik z checkboxami jako stan. Możesz to robić bez jednego skilla z kursu — zwykłym plikiem markdown i dyscypliną.</p>
@@ -925,7 +1011,7 @@ jeśli nic sensownego nie widzisz, powiedz to wprost.</pre>
     <div class="nores" id="nores">Brak wyników dla tego zapytania.</div>
 
     <footer>
-      Analiza wykonana 17.09.2026 na podstawie 5 PDF-ów, 39 transkrypcji lekcji i 8 repozytoriów kodu.<br>
+      Analiza wykonana 17.09.2026 na podstawie 5 PDF-ów, 39 transkrypcji lekcji, 8 repozytoriów kodu i makiety Konstruktora v2.<br>
       Weryfikacja tez wobec code.claude.com/docs — stan na dzień analizy. Nazwy modeli i liczby w ekosystemie zmieniają się szybko; sprawdzaj u źródła.<br>
       Postępy w checklistach zapisują się lokalnie w tej przeglądarce.
     </footer>

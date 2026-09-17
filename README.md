@@ -12,6 +12,7 @@ skonfrontowana z aktualną dokumentacją Anthropic.
 | `analiza/notatki/modul2-sredniozaawansowany.md` | Notatki z 9 transkrypcji: skille, subagenci, MCP, hooki, workflows, /goal |
 | `analiza/notatki/modul3-mobilne.md` | Notatki z modułu mobilnego (Nawykometr) |
 | `analiza/notatki/modul4-dodatki.md` | Ralph Wiggum, git worktree, Remotion, Channels, Ollama |
+| `analiza/notatki/konstruktor.md` | **Analiza makiety Konstruktora v2** — mocne strony, ryzyka, kolejność wdrożenia |
 | `analiza/notatki/weryfikacja.md` | **Weryfikacja tez wobec dokumentacji** — potwierdzone / do korekty / ryzykowne |
 | `analiza/notatki/transcript-map.json` | Mapa 39 transkrypcji → lekcje |
 | `analiza/notatki/ALL_LINKS.json` | 126 linków wyekstrahowanych z PDF-ów |
