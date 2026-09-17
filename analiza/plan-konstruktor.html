@@ -1,0 +1,427 @@
+<title>Plan wdrożenia Konstruktora</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:      #F1F3F1;
+  --surface:    #FFFFFF;
+  --surface-2:  #E6E9E5;
+  --ink:        #1A1F1E;
+  --ink-soft:   #4B5451;
+  --ink-faint:  #7C8683;
+  --rule:       #D3D8D3;
+  --accent:     #2E5C8A;
+  --accent-soft:#DCE6EE;
+  --high:       #B8452F;
+  --high-soft:  #F3DED7;
+  --mid:        #96660E;
+  --mid-soft:   #EFE3C6;
+  --low:        #1F7A5C;
+  --low-soft:   #DCEEE5;
+  --step:46px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14181A; --surface:#1B2123; --surface-2:#222A29;
+    --ink:#E7E9E6; --ink-soft:#A9B3AF; --ink-faint:#77827E; --rule:#323B39;
+    --accent:#78ACD6; --accent-soft:#1C3140;
+    --high:#E88569; --high-soft:#3A2018;
+    --mid:#D9B45C; --mid-soft:#33290F;
+    --low:#5FC79A; --low-soft:#163427;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14181A; --surface:#1B2123; --surface-2:#222A29;
+  --ink:#E7E9E6; --ink-soft:#A9B3AF; --ink-faint:#77827E; --rule:#323B39;
+  --accent:#78ACD6; --accent-soft:#1C3140;
+  --high:#E88569; --high-soft:#3A2018;
+  --mid:#D9B45C; --mid-soft:#33290F;
+  --low:#5FC79A; --low-soft:#163427;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:44px 80px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:500}
+h1{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:clamp(30px,6vw,42px);line-height:1.1;letter-spacing:-.01em;margin:10px 0 0;text-wrap:balance}
+.lede{color:var(--ink-soft);font-size:16.5px;max-width:60ch;margin:15px 0 0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:24px;padding-top:18px;border-top:1px solid var(--rule);font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-faint)}
+.meta b{color:var(--ink-soft);font-weight:500}
+
+.method{margin-top:44px}
+.method h2, .money h2, .close h2, .stream h2{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:22px;letter-spacing:-.01em;margin:0 0 8px}
+.method>p{color:var(--ink-soft);font-size:15px;max-width:64ch;margin:0 0 20px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+@media (max-width:620px){.tiles{grid-template-columns:1fr}}
+.tiles>div{background:var(--surface);padding:16px 17px}
+.tiles h3{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 7px}
+.tiles p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.5}
+
+.phase{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);padding-bottom:9px;border-bottom:2px solid var(--ink);margin:44px 0 8px}
+.phase:first-of-type{margin-top:52px}
+
+.stage{display:grid;grid-template-columns:var(--step) 1fr;gap:18px;background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:20px;margin-top:14px}
+@media (max-width:560px){.stage{grid-template-columns:1fr}}
+.num{width:var(--step);height:var(--step);border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-family:Fraunces,serif;font-weight:600;font-size:19px;font-variant-numeric:tabular-nums}
+.stage[data-risk="high"] .num{border-color:var(--high);color:var(--high)}
+.stage[data-risk="mid"] .num{border-color:var(--mid);color:var(--mid)}
+.stage[data-risk="low"] .num{border-color:var(--low);color:var(--low)}
+.stage h3{font-family:Fraunces,serif;font-weight:600;font-size:19px;letter-spacing:-.01em;margin:0;line-height:1.28;text-wrap:balance}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 0}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:2px;background:var(--surface-2);color:var(--ink-soft)}
+.chip.low{background:var(--low-soft);color:var(--low)}
+.chip.mid{background:var(--mid-soft);color:var(--mid)}
+.chip.high{background:var(--high-soft);color:var(--high)}
+
+.q{margin:14px 0 0;padding-left:13px;border-left:3px solid var(--accent);font-size:15px}
+.q b{font-weight:600}
+.gate{margin-top:10px;padding-left:13px;border-left:3px solid var(--low);font-size:13.5px;color:var(--ink-soft)}
+.gate b{color:var(--low);font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;display:block;margin-bottom:3px}
+
+.lists{display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;margin-top:16px}
+@media (max-width:560px){.lists{grid-template-columns:1fr}}
+.lists h4{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 7px;font-weight:500}
+.lists ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;font-size:13.5px;line-height:1.45;color:var(--ink-soft)}
+.lists li{padding-left:15px;position:relative}
+.lists li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:2px;background:var(--ink-faint)}
+.lists .out li::before{top:5px;height:8px;width:8px;background:none;border-left:2px solid var(--rule);border-bottom:2px solid var(--rule)}
+
+.add{margin-top:14px;background:var(--accent-soft);border-radius:2px;padding:12px 14px}
+.add strong{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.add span{font-size:13.5px;color:var(--ink);line-height:1.5}
+
+.flag{margin-top:12px;padding:12px 14px;background:var(--mid-soft);border-radius:2px;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.flag b{color:var(--mid)}
+.warn{margin-top:12px;padding:12px 14px;background:var(--high-soft);border-radius:2px;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.warn b{color:var(--high)}
+
+.cost{margin-top:14px;display:flex;flex-wrap:wrap;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+.cost div{background:var(--surface-2);padding:9px 13px;flex:1 1 140px}
+.cost dt{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 2px}
+.cost dd{margin:0;font-family:Fraunces,serif;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.cost dd small{display:block;font-family:"IBM Plex Sans",sans-serif;font-size:12px;font-weight:400;color:var(--ink-soft);margin-top:1px}
+
+.stream{margin-top:48px;border:2px solid var(--accent);border-radius:4px;background:var(--surface);padding:22px}
+.stream>p{color:var(--ink-soft);font-size:14px;margin:8px 0 0;max-width:62ch}
+.flow{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.flow div{flex:1 1 150px;background:var(--surface-2);border-radius:2px;padding:12px 14px}
+.flow b{display:block;font-family:Fraunces,serif;font-size:13.5px;font-weight:600;margin-bottom:3px}
+.flow span{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+.flow em{display:block;font-family:"IBM Plex Mono",monospace;font-style:normal;font-size:11px;color:var(--accent);margin-top:6px}
+
+.money{margin-top:52px;padding-top:26px;border-top:2px solid var(--ink)}
+.money>p{color:var(--ink-soft);font-size:14px;margin:0 0 18px;max-width:62ch}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:460px}
+th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);font-weight:500;text-align:left;padding:0 12px 8px 0;border-bottom:1px solid var(--rule)}
+td{padding:9px 12px 9px 0;border-bottom:1px solid var(--rule);color:var(--ink-soft);vertical-align:top}
+td:first-child{color:var(--ink);font-weight:500;white-space:nowrap}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.total td{border-bottom:none;border-top:2px solid var(--ink);padding-top:11px;color:var(--ink);font-weight:600}
+.est{margin-top:14px;font-size:13px;color:var(--ink-soft);background:var(--mid-soft);padding:12px 14px;border-radius:2px}
+.est b{color:var(--mid)}
+
+.close{margin-top:52px;padding-top:26px;border-top:2px solid var(--ink)}
+.close>p{color:var(--ink-soft);font-size:14px;margin:0 0 16px;max-width:62ch}
+.close ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;color:var(--ink-soft);font-size:14.5px}
+.close ol b{color:var(--ink);font-weight:600}
+.close li[data-new] b{color:var(--accent)}
+
+footer{margin-top:44px;padding-top:16px;border-top:1px solid var(--rule);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-faint)}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Akademia Robotyki · dokument do akceptacji</div>
+    <h1>Plan wdrożenia Konstruktora</h1>
+    <p class="lede">
+      Budujemy od zera, ale mając gotowy wzór — zaakceptowaną makietę funkcjonalną.
+      Droga do niej dzieli się na siedem etapów: każdy odpowiada na jedno pytanie,
+      ma policzony koszt i czas, i każdy da się zatrzymać bez utraty pracy
+      wykonanej wcześniej.
+    </p>
+    <div class="meta">
+      <span><b>17 września 2026</b></span>
+      <span>Krzysztof Brożek</span>
+      <span>etap bieżący: <b>0 — w toku</b></span>
+      <span>cel MVP: czytnik + 4 instrukcje</span>
+    </div>
+  </header>
+
+  <section class="method">
+    <h2>Cel i metoda</h2>
+    <p>
+      Konstruktor to aplikacja dla instruktorów i dzieci w placówkach edukacyjnych:
+      cyfrowe instrukcje budowy modeli, prowadzone zajęcia, docelowo tryb na żywo
+      w sali. Punktem odniesienia dla całego zakresu jest gotowa makieta —
+      nie projektujemy funkcji w locie, tylko realizujemy to, co w niej ustalone,
+      etap po etapie.
+    </p>
+    <div class="tiles">
+      <div>
+        <h3>Etap = pytanie, nie termin</h3>
+        <p>Każdy etap kończy się odpowiedzią na jedno konkretne pytanie, nie datą w kalendarzu.</p>
+      </div>
+      <div>
+        <h3>Koszt policzony z góry</h3>
+        <p>Czas i pieniądze na etap są znane, zanim etap się zaczyna — nie szacowane po fakcie.</p>
+      </div>
+      <div>
+        <h3>Warunek zatrzymania</h3>
+        <p>Jeśli odpowiedź wyjdzie inna niż zakładana, projekt zatrzymuje się bez utraty tego, co już działa.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="phase">Faza pierwsza — sprawdzamy, czy instrukcje działają</div>
+
+  <article class="stage" data-risk="low">
+    <div class="num">0</div>
+    <div>
+      <h3>Cztery instrukcje na zajęciach, bez aplikacji</h3>
+      <div class="chips"><span class="chip low">ryzyko zerowe</span><span class="chip">w toku</span></div>
+      <p class="q"><b>Czy te instrukcje w ogóle działają z dziećmi?</b></p>
+      <div class="lists">
+        <div>
+          <h4>W środku</h4>
+          <ul>
+            <li>Cztery instrukcje — pierwszy moduł tematyczny</li>
+            <li>Historia i ciekawostka przy każdej</li>
+            <li>Instruktor prowadzi z tabletu albo z wydruku</li>
+            <li>Karta obserwacji po każdych zajęciach</li>
+          </ul>
+        </div>
+        <div class="out">
+          <h4>Czego jeszcze nie ma</h4>
+          <ul><li>Aplikacji w żadnej formie</li><li>Instalacji czegokolwiek</li></ul>
+        </div>
+      </div>
+      <div class="gate"><b>Kryterium odbioru</b>Cztery instrukcje przetestowane na żywo w co najmniej jednej grupie, karta obserwacji wypełniona dla każdej, wnioski spisane przed etapem 1.</div>
+      <div class="cost">
+        <div><dt>Czas</dt><dd>3 instrukcje<small>do zaprojektowania i wyrenderowania</small></dd></div>
+        <div><dt>Koszt stały</dt><dd>0 zł<small>nic nowego do kupienia</small></dd></div>
+      </div>
+    </div>
+  </article>
+
+  <div class="phase">Faza druga — aplikacja, którą da się rozbudowywać</div>
+
+  <article class="stage" data-risk="low">
+    <div class="num">1</div>
+    <div>
+      <h3>Czytnik instrukcji na tablet</h3>
+      <div class="chips"><span class="chip low">ryzyko niskie</span><span class="chip">MVP aplikacji</span><span class="chip">działa offline</span></div>
+      <p class="q"><b>Czy dzieci pracują lepiej z aplikacją niż z PDF-em — i czy instruktorzy sami ją zainstalują?</b></p>
+      <div class="lists">
+        <div>
+          <h4>W środku</h4>
+          <ul>
+            <li>Kroki na pełnym ekranie, licznik postępu</li>
+            <li>Historia, ciekawostka, kącik kreatywności</li>
+            <li>Instalacja na tablet z ikoną, bez sklepu</li>
+            <li>Pełne działanie bez internetu</li>
+          </ul>
+        </div>
+        <div class="out">
+          <h4>Czego jeszcze nie ma</h4>
+          <ul><li>Kont i logowania</li><li>Sesji na żywo</li><li>Odznak, panelu, statystyk</li></ul>
+        </div>
+      </div>
+      <div class="add"><strong>Dodane do zakresu</strong><span>Zapis zdarzeń od pierwszego dnia: ukończony krok, czas na kroku, powrót do poprzedniego kroku, ukończona budowla. Zapisywane lokalnie na tablecie, wysyłane przy pierwszym wgraniu w etapie 2 — nie wymaga backendu już teraz. Bez tego dane do etapu 6 zaczęłyby się zbierać dopiero w etapie 6, czyli pół roku pracy z placówkami startowałoby po zakończeniu całej budowy, zamiast równolegle z nią.</span></div>
+      <div class="add"><strong>Dodane do zakresu</strong><span>Jednostronicowy wzorzec wizualny zgodny z makietą — kolory, typografia, wzorce ekranów. Punkt odniesienia dla każdego kolejnego etapu, żeby wygląd nie był odtwarzany na nowo przy każdej funkcji.</span></div>
+      <div class="gate"><b>Kryterium odbioru</b>Trzech z trzech instruktorów instaluje aplikację z pisemnej instrukcji, bez kontaktu z zespołem.</div>
+      <div class="warn"><b>Zanim ruszy:</b> instrukcja dinozaura waży 42 MB — cztery takie to 170 MB na tablecie, jeszcze do przejścia, ale dwadzieścia już nie. Po przeskalowaniu do rozmiaru ekranu ten sam komplet kroków zmieści się w 3–6 MB bez widocznej różnicy. Robota jednorazowa, do zautomatyzowania, konieczna przed pierwszym pobraniem.</div>
+      <div class="cost">
+        <div><dt>Czas</dt><dd>2–3 tygodnie<small>przy pracy popołudniami</small></dd></div>
+        <div><dt>Koszt stały</dt><dd>0–20 zł/mies<small>darmowy plan prawdopodobnie wystarczy</small></dd></div>
+      </div>
+    </div>
+  </article>
+
+  <article class="stage" data-risk="mid">
+    <div class="num">2</div>
+    <div>
+      <h3>Zaplecze do wgrywania instrukcji</h3>
+      <div class="chips"><span class="chip mid">ryzyko średnie</span><span class="chip">zdejmuje wąskie gardło</span></div>
+      <p class="q"><b>Czy nowa instrukcja trafia na tablety bez udziału zespołu technicznego w kodzie?</b></p>
+      <div class="lists">
+        <div>
+          <h4>W środku</h4>
+          <ul>
+            <li>Panel: wgrywanie renderu, kroków, opisu i tagów</li>
+            <li>Lista części generowana automatycznie</li>
+            <li>Moduły tematyczne i kolejność w module</li>
+            <li>Aplikacja dociąga nowości sama</li>
+          </ul>
+        </div>
+        <div class="out">
+          <h4>Czego jeszcze nie ma</h4>
+          <ul><li>Ról i zaproszeń</li><li>Statystyk</li></ul>
+        </div>
+      </div>
+      <div class="flag"><b>Decyzja przed projektem bazy:</b> jakie dane o dzieciach zapisujemy i na jak długo? Poziom grupy liczy się z historii sesji — skasowanie historii po okresie retencji skasuje też poziom, jeśli nie zaprojektuje się tego świadomie. To rozstrzygnięcie musi zapaść przed schematem, nie po jego wdrożeniu.</div>
+      <div class="gate"><b>Kryterium odbioru</b>Instrukcja wgrana przez panel trafia na tablet testowy w mniej niż 10 minut, bez zmiany w kodzie aplikacji.</div>
+      <div class="cost">
+        <div><dt>Czas</dt><dd>3–4 tygodnie<small>tu wchodzi baza danych</small></dd></div>
+        <div><dt>Koszt stały</dt><dd>20–60 zł/mies<small>pierwszy realny rachunek</small></dd></div>
+      </div>
+    </div>
+  </article>
+
+  <div class="phase">Faza trzecia — z instrukcji robi się lekcja</div>
+
+  <article class="stage" data-risk="low">
+    <div class="num">3</div>
+    <div>
+      <h3>Widok instruktora</h3>
+      <div class="chips"><span class="chip low">ryzyko techniczne niskie</span><span class="chip mid">nakład pisarski duży</span></div>
+      <p class="q"><b>Czy metodykę da się przekazać w tekście tak, by jakość zajęć nie zależała od doświadczenia prowadzącego?</b></p>
+      <div class="lists">
+        <div>
+          <h4>W środku</h4>
+          <ul>
+            <li>Jak poprowadzić zajęcia, krok po kroku</li>
+            <li>Co przeczytać na głos, czego dziś uczymy</li>
+            <li>Potrzebne części i czas na etap</li>
+          </ul>
+        </div>
+        <div class="out">
+          <h4>Czego jeszcze nie ma</h4>
+          <ul><li>Sterowania tabletami</li><li>Kalendarza i grup</li></ul>
+        </div>
+      </div>
+      <div class="gate"><b>Kryterium odbioru</b>Instruktor, który nie brał udziału w pisaniu scenariusza, prowadzi z niego zajęcia od początku do końca bez pytań do zespołu.</div>
+      <div class="cost">
+        <div><dt>Czas</dt><dd>2 tygodnie + pisanie<small>scenariusz do każdej instrukcji osobno</small></dd></div>
+        <div><dt>Koszt stały</dt><dd>bez zmian<small>nic nowego ponad etap 2</small></dd></div>
+      </div>
+    </div>
+  </article>
+
+  <div class="phase">Faza czwarta — dopiero tu wchodzi sprzęt</div>
+
+  <article class="stage" data-risk="high">
+    <div class="num">4</div>
+    <div>
+      <h3>Sesja na żywo i Konstruktor-Box</h3>
+      <div class="chips"><span class="chip high">ryzyko wysokie</span><span class="chip high">jedyny etap ze sprzętem</span></div>
+      <p class="q"><b>Czy instruktor może prowadzić całą grupę z jednego ekranu, w sali bez internetu?</b></p>
+      <div class="lists">
+        <div>
+          <h4>W środku</h4>
+          <ul>
+            <li>Tablety w jednej sieci, kod sesji</li>
+            <li>Komunikaty i podpowiedzi na wszystkie ekrany</li>
+            <li>Zbiórka, prośby o pomoc, podsumowanie</li>
+          </ul>
+        </div>
+        <div class="out">
+          <h4>Warunek wejścia</h4>
+          <ul><li>Etapy 1–3 działają w kilku placówkach</li><li>Instruktorzy chcą tego sami</li><li>Budżet na pudełka zatwierdzony</li></ul>
+        </div>
+      </div>
+      <div class="warn"><b>Tu leży całe ryzyko projektu.</b> Wszystko wcześniej to kod — działa albo się go poprawia. Tu dochodzi sprzęt w sali pełnej dzieci, w kilku placówkach naraz. <b>Da się to obejść:</b> kod sesji podawany na głos i ręczna synchronizacja dają większość korzyści bez ani jednego pudełka. Ten wariant warto sprawdzić, zanim padnie zamówienie na sprzęt.</div>
+      <div class="cost">
+        <div><dt>Czas</dt><dd>2–3 miesiące<small>najdłuższy etap z całej siódemki</small></dd></div>
+        <div><dt>Sprzęt</dt><dd>300–800 zł/sala<small>jednorazowo, w każdej placówce</small></dd></div>
+      </div>
+    </div>
+  </article>
+
+  <div class="phase">Faza piąta — dopiero gdy reszta żyje</div>
+
+  <article class="stage" data-risk="mid">
+    <div class="num">5</div>
+    <div>
+      <h3>Odznaki i postępy</h3>
+      <div class="chips"><span class="chip mid">dzieli się na dwie części</span></div>
+      <p class="q"><b>Czy odznaki faktycznie trzymają dzieci przy temacie dłużej?</b></p>
+      <div class="lists">
+        <div>
+          <h4>Tania połowa — może wejść wcześniej</h4>
+          <ul><li>Odznaki lokalne na tablecie</li><li>Gablota, licznik ukończonych budowli</li></ul>
+        </div>
+        <div class="out">
+          <h4>Droga połowa — wymaga etapu 4</h4>
+          <ul><li>Odznaki grupowe</li><li>Postęp modułu przez wiele zajęć</li></ul>
+        </div>
+      </div>
+      <div class="cost">
+        <div><dt>Czas</dt><dd>1 tydzień + reszta<small>tania połowa szybko, droga po etapie 4</small></dd></div>
+        <div><dt>Koszt stały</dt><dd>bez zmian<small>mieści się w istniejącym</small></dd></div>
+      </div>
+    </div>
+  </article>
+
+  <article class="stage" data-risk="low">
+    <div class="num">6</div>
+    <div>
+      <h3>Statystyki i testy A/B</h3>
+      <div class="chips"><span class="chip low">ryzyko niskie</span><span class="chip">wymaga danych, nie kodu</span></div>
+      <p class="q"><b>Który sposób narysowania kroku jest szybszy do zrozumienia?</b></p>
+      <div class="lists">
+        <div>
+          <h4>W środku</h4>
+          <ul><li>Analiza trudności — gdzie są wąskie gardła</li><li>Test A/B wariantów rysunku</li></ul>
+        </div>
+        <div class="out">
+          <h4>Dlaczego na końcu</h4>
+          <ul><li>Sens danych pojawia się od kilkuset przejść</li><li>To kilka placówek przez kilka miesięcy</li></ul>
+        </div>
+      </div>
+      <div class="add"><strong>Zmiana dzięki etapowi 1</strong><span>To jest już wyłącznie analiza, nie zbieranie danych od zera — zdarzenia lecą od etapu 1, więc zegar zaczyna tykać razem z pierwszym wdrożeniem, a nie dopiero teraz.</span></div>
+      <div class="gate"><b>Kryterium odbioru</b>Statystycznie istotna różnica przy co najmniej kilkuset przejściach z co najmniej dwóch placówek.</div>
+      <div class="cost">
+        <div><dt>Czas</dt><dd>2–3 tygodnie<small>gdy dane już są</small></dd></div>
+        <div><dt>Koszt stały</dt><dd>bez zmian<small>mieści się w istniejącym</small></dd></div>
+      </div>
+    </div>
+  </article>
+
+  <section class="stream">
+    <h2>Obok etapów: produkcja instrukcji</h2>
+    <p>To nie jest etap, tylko strumień biegnący przez cały projekt. Instrukcje powstają nieprzerwanie w trakcie etapów 1, 2 i 3 — i to one, nie kod, wyznaczają tempo całości.</p>
+    <div class="flow">
+      <div><b>Pomysł i prototyp</b><span>Budowa fizyczna, test stabilności modelu.</span><em>na stole</em></div>
+      <div><b>Narzędziownik</b><span>Walidacja części i połączeń, biblioteka gotowych modułów.</span><em>już działa</em></div>
+      <div><b>Studio 2.0</b><span>Model, kroki, kamery, render, lista części.</span><em>już działa</em></div>
+      <div><b>Warstwa lekcji</b><span>Cel, historia, ciekawostka, kącik kreatywności.</span><em>ręcznie do etapu 2</em></div>
+    </div>
+  </section>
+
+  <section class="money">
+    <h2>Podsumowanie do rozmowy o finansowaniu</h2>
+    <p>Koszty rozłożone na etapy. Stały rachunek zaczyna się dopiero od etapu 2 — wszystko wcześniej mieści się w darmowych planach i narzędziach, które już istnieją.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Etap</th><th>Czas</th><th>Koszt stały</th><th>Jednorazowo</th></tr></thead>
+        <tbody>
+          <tr><td>0 · Instrukcje</td><td>3 instrukcje</td><td class="n">0 zł</td><td class="n">—</td></tr>
+          <tr><td>1 · Czytnik</td><td>2–3 tyg.</td><td class="n">0–20 zł/mies</td><td class="n">—</td></tr>
+          <tr><td>2 · Zaplecze</td><td>3–4 tyg.</td><td class="n">20–60 zł/mies</td><td class="n">—</td></tr>
+          <tr><td>3 · Instruktor</td><td>2 tyg. + pisanie</td><td class="n">bez zmian</td><td class="n">—</td></tr>
+          <tr><td>4 · Sesja i Box</td><td>2–3 mies.</td><td class="n">bez zmian</td><td class="n">300–800 zł/sala</td></tr>
+          <tr><td>5 · Odznaki</td><td>1 tydz. + reszta</td><td class="n">bez zmian</td><td class="n">—</td></tr>
+          <tr><td>6 · Statystyki</td><td>2–3 tyg.</td><td class="n">bez zmian</td><td class="n">—</td></tr>
+          <tr class="total"><td>Etapy 0–3</td><td>ok. 2 miesiące</td><td class="n">do 60 zł/mies</td><td class="n">0 zł</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="est"><b>Czego w tej tabeli nie ma, a jest największym kosztem: czasu pracy.</b> Czas budowy aplikacji jest oszacowany, ale czas na jedną instrukcję — nie. Do wpisania przed rozmową o skalowaniu: <b>ile godzin zajmuje jedna instrukcja</b> od pomysłu do gotowego renderu. To jedyna liczba, z której da się policzyć koszt rozbudowy całej biblioteki.</p>
+  </section>
+
+  <section class="close">
+    <h2>Co trzeba rozstrzygnąć, zanim ruszy etap 1</h2>
+    <p>Cztery pierwsze punkty dotyczą samego wdrożenia. Dwa ostatnie pojawiły się przy przeglądzie planu i wcześniej nie były spisane.</p>
+    <ol>
+      <li><b>Jakie tablety mają instruktorzy?</b> Android czy iPad — zmienia sposób instalacji i limity pamięci na instrukcje.</li>
+      <li><b>Ilu instruktorów i w ilu placówkach testuje na start?</b> Im mniej na początek, tym szybciej wrócą uwagi.</li>
+      <li><b>Kto odpowiada za hosting i rachunek od etapu 2?</b> Pierwszy stały koszt miesięczny pojawia się właśnie tam.</li>
+      <li><b>Na jakich warunkach powstaje reszta?</b> Etapy 0–3 to około dwóch miesięcy pracy. Warunki ustalamy przed etapem 1, nie po.</li>
+      <li data-new><b>Jakie dane o dzieciach wolno nam zapisywać i na jak długo?</b> Placówki oświatowe, dane małoletnich — rozstrzygnięcie potrzebne przed projektem bazy w etapie 2, nie po jej wdrożeniu.</li>
+      <li data-new><b>Ile godzin zajmuje jedna instrukcja?</b> Jedyna brakująca liczba do policzenia kosztu skalowania biblioteki na kolejne moduły.</li>
+    </ol>
+  </section>
+
+  <footer>Plan wdrożenia · wrzesień 2026 · dokument roboczy, do akceptacji zakresu i harmonogramu etapów 0–3</footer>
+
+</div>
