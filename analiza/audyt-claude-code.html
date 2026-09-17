@@ -87,6 +87,7 @@ section{scroll-margin-top:90px;margin-bottom:58px}
 h2{font-family:var(--serif);font-size:clamp(27px,4.2vw,37px);font-weight:400;line-height:1.14;letter-spacing:-.01em;margin-bottom:12px}
 h3{font-size:17px;font-weight:600;letter-spacing:-.005em;margin:26px 0 8px}
 .lede{font-size:17.5px;line-height:1.62;color:var(--ink2);max-width:66ch}
+.pointer{margin-top:20px;padding:13px 16px;border-left:3px solid var(--accent);background:var(--surface2);border-radius:0 8px 8px 0;font-size:15px;color:var(--ink2)}
 p{max-width:68ch;margin:0 0 13px}
 main ul,main ol{max-width:68ch;padding-left:21px;margin:0 0 13px}
 main li{margin:6px 0}
@@ -200,9 +201,9 @@ footer{border-top:1px solid var(--line);margin-top:46px;padding-top:22px;font-fa
 
   <main>
     <header class="hero">
-      <div class="stamp"><i class="dot"></i> 39/39 transkrypcji &middot; makieta Konstruktora przeanalizowana</div>
+      <div class="stamp"><i class="dot"></i> 39/39 transkrypcji &middot; Konstruktor jako projekt komercyjny</div>
       <h1>Kurs, który uczy <i>metody</i>, a myli się w <i>szczegółach</i></h1>
-      <p class="lede">Przeczytałem całą Akademię Claude Code — opisy lekcji, wszystkie transkrypcje i realny kod ośmiu repozytoriów — i skonfrontowałem każdą istotną tezę z aktualną dokumentacją Anthropic. To jest wynik: co działa, co jest przeterminowane, czego kurs nie wie, i co z tym zrobić u siebie. Na końcu osobna sekcja: <a href="#konstruktor">co z tego stosuje się do Konstruktora</a>.</p>
+      <p class="lede">Przeczytałem całą Akademię Claude Code — opisy lekcji, wszystkie transkrypcje i realny kod ośmiu repozytoriów — i skonfrontowałem każdą istotną tezę z aktualną dokumentacją Anthropic. To jest wynik: co działa, co jest przeterminowane, czego kurs nie wie, i co z tym zrobić u siebie. Na końcu dwie osobne sekcje o twoim projekcie: <a href="#konstruktor">co widzę w makiecie Konstruktora</a> i <a href="#firma">co się zmienia, bo robisz to dla firmy</a>.</p>
 
       <div class="tiles">
         <div class="tile"><b>39</b><span>transkrypcji lekcji</span></div>
@@ -211,7 +212,7 @@ footer{border-top:1px solid var(--line);margin-top:46px;padding-top:22px;font-fa
         <div class="tile"><b>33</b><span>subagentów</span></div>
         <div class="tile"><b>11</b><span>tez do korekty</span></div>
       </div>
-      <p class="note">Źródła pierwotne: 5 PDF-ów (62 strony), transkrypcje z Dysku Google, repozytoria <code>workspace-template-mobile</code>, <code>claude-code-zasoby</code>, <code>nawykometr-docs</code>, <code>ralph-tui</code>, <code>design.md</code> i cztery inne, oraz <code>makieta-live.html</code> (Konstruktor v2, 6088 linii). Weryfikacja: code.claude.com/docs, stan na 17.09.2026.</p>
+      <p class="note">Źródła pierwotne: 5 PDF-ów (62 strony), transkrypcje z Dysku Google, repozytoria <code>workspace-template-mobile</code>, <code>claude-code-zasoby</code>, <code>nawykometr-docs</code>, <code>ralph-tui</code>, <code>design.md</code> i cztery inne, oraz dwa twoje dokumenty: <code>makieta-live.html</code> (Konstruktor v2, 6088 linii) i „Siedem etapów Konstruktora" z 16.09. Weryfikacja: code.claude.com/docs, stan na 17.09.2026.</p>
     </header>
 
     <section id="werdykt" data-t="Werdykt">
@@ -895,7 +896,8 @@ jeśli nic sensownego nie widzisz, powiedz to wprost.</pre>
         <h4><span class="tag risk">Ryzyko 1</span>Offline jest zadeklarowany w interfejsie i nieobecny w kodzie</h4>
         <p>Panel pokazuje kafelek <strong>„96% dostępność offline · bez przestojów"</strong>. W kodzie: zero <code>localStorage</code>, zero <code>fetch</code>, zero IndexedDB, zero service workera. Cała warstwa danych to stałe w pamięci.</p>
         <p>W makiecie to jest poprawne — makieta ma pokazywać, nie działać. Ale to jest <strong>dokładnie ten błąd, który adwersarialny przegląd w kursie sklasyfikował jako Tier 1</strong>: aplikacja projektowana pod tryb online, offline dopiero w piątym etapie, więc <em>struktura danych będzie inna</em> i trzeba ją przepisać.</p>
-        <p>Tablety w szkolnej świetlicy to środowisko z realnie złym wifi — to nie jest przypadek brzegowy, to przypadek podstawowy. <strong>Offline-first musi wejść do modelu danych na starcie.</strong> Jeśli miałbym wskazać jedną rzecz, na której warto teraz spędzić godzinę rozmowy, to ta.</p>
+        <p>Tablety w szkolnej świetlicy to środowisko z realnie złym wifi — to nie jest przypadek brzegowy, to przypadek podstawowy. <strong>Offline-first musi wejść do modelu danych na starcie.</strong></p>
+        <p class="pointer" style="margin-top:14px">Uzupełnienie po lekturze twoich <strong>„Siedmiu etapów"</strong>: masz to rozpoznane lepiej, niż wynikało z samej makiety — rozdzielasz tam offline na dwa tryby o różnej trudności, instrukcje pobrane na tablet i sesję na żywo wymagającą sieci lokalnej. To dobre rozdzielenie i zdejmuje z MVP całe ryzyko sprzętowe. Zostaje jedno: <strong>zapis postępu musi być w modelu danych od etapu 1</strong>, nawet jeśli wtedy trafia tylko na tablet.</p>
       </div>
 
       <div class="card risk">
@@ -924,10 +926,120 @@ jeśli nic sensownego nie widzisz, powiedz to wprost.</pre>
       <ol>
         <li><strong>Roast na modelu danych i trybie offline</strong> — nie na wyglądzie, wygląd jest gotowy. Pytania, od których bym zaczął: co się dzieje, gdy tablet traci sieć w połowie sesji? gdy dwoje dzieci odznacza ten sam krok? gdy instruktor kończy sesję, a jeden tablet jest offline? gdy instrukcja zmieni się w zapleczu w trakcie trwania zajęć?</li>
         <li><strong>Wyciągnij <code>design.md</code> z makiety.</strong> Kolory, typografia, spacing i komponenty już istnieją w tych 95 KB CSS. Spisz je jako źródło prawdy, <em>zanim</em> styl zacznie się rozjeżdżać między sesjami — bo zacznie.</li>
-        <li><strong>Podziel na etapy pionowo, nie po personach.</strong> Kusi, żeby zrobić „najpierw zaplecze, potem instruktora, potem dziecko" — to jest podział poziomy i zemści się. Etap pierwszy: jedna grupa, jedna instrukcja, tablet↔instruktor, offline w modelu danych od początku.</li>
+        <li><strong>Podział na etapy — zrobiony.</strong> Tę radę pisałem, zanim zobaczyłem twój plan siedmiu etapów; jest podzielony pionowo i z warunkami zatrzymania, czyli lepiej, niż zamierzałem zaproponować. Omówienie w następnej sekcji.</li>
         <li><strong>Assety z base64 do storage</strong> — osobny, mechaniczny etap. Tu autopilot.</li>
         <li><strong>Lista zdarzeń analitycznych przed kodem.</strong> Makieta już wie, co mierzyć — statystyki, trudne kroki, test A/B. Spisanie tego zajmie kwadrans, a danych nie da się dorobić wstecz.</li>
       </ol>
+      <p class="pointer">Powyższe dotyczy samej makiety. Ponieważ to jest produkt <strong>robiony dla firmy</strong>, a nie eksperyment własny, i ponieważ masz już własny plan etapów, następna sekcja zestawia jedno z drugim: <a href="#firma">co kurs dokłada do „Siedmiu etapów", w czym im przeczy, i czego nie ma nigdzie</a>.</p>
+    </section>
+
+    <section id="firma" data-t="Projekt dla firmy">
+      <div class="eyebrow">Twój projekt · kontekst komercyjny</div>
+      <h2>Kurs kontra twój plan siedmiu etapów</h2>
+      <p class="lede">Zanim to napisałem, przeczytałem twój dokument <strong>„Siedem etapów Konstruktora"</strong> z 16 września. To zmienia charakter tej sekcji: nie proponuję ci planu, bo plan masz — i to dobry. Pytanie brzmi, <strong>co kurs do niego dokłada, w czym mu przeczy, i czego nie ma ani w kursie, ani w nim</strong>.</p>
+
+      <div class="card ok">
+        <h4><span class="tag ok">Kluczowe</span>Twój podział na etapy jest lepiej pomyślany niż kursowy</h4>
+        <p>To nie jest kurtuazja, tylko konkretna różnica w definicji etapu.</p>
+        <p>W kursie <strong>etap = działający pionowy plaster produktu</strong>. Dobra zasada, ale odpowiada tylko na pytanie „czy da się to zbudować". U ciebie <strong>etap = jedno pytanie z warunkiem zatrzymania i policzonym kosztem</strong>: „czy te instrukcje w ogóle działają z dziećmi", „czy instruktorzy ogarną instalację", „czy odznaki trzymają dzieci dłużej". Etap zerowy nie zawiera ani linijki kodu. Etap czwarty ma jawnie opisane obejście, które daje 80% korzyści bez kupowania sprzętu.</p>
+        <p>Kurs ani razu nie pyta „a jeśli odpowiedź brzmi nie, to co przestajemy budować". Przy projekcie, którego warunki dopiero ustalasz z firmą, twoja rama jest mocniejsza. <strong>Nie zamieniaj jej na kursową.</strong> Bierz z kursu narzędzia do wykonania etapu, nie do jego wyznaczenia.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Korekta</span>PWA zamiast React Native wycina połowę modułu mobilnego</h4>
+        <p>Twój etap 1 to aplikacja otwierana z adresu, dodawana na ekran główny, hostowana na Cloudflare. To nie jest ścieżka z kursu i <strong>to dobra decyzja</strong> — szkolne tablety, brak sklepów, brak kont deweloperskich, zero procedur wydawniczych.</p>
+        <p>Konsekwencja: z modułu mobilnego <strong>odpada Expo, EAS, moduły natywne, Apple Developer 99 USD, Google Play 25 USD, cała dłubanina z buildami i sekretami w chmurze</strong>, a razem z nimi znaczna część czasu, który kurs na to poświęca. Zostaje metoda — i ona zostaje w całości.</p>
+        <p><strong>Jedna rzecz nie przeniesie się wcale:</strong> offline. Kurs rozwiązuje go kolejką zapisów w React Native na Supabase. Ty potrzebujesz service workera, Cache API i przemyślanego limitu pamięci na tablecie. To jest inny problem o tej samej nazwie. Obejrzyj lekcje o offline dla <em>pytań</em>, które tam padają, nie dla kodu.</p>
+      </div>
+
+      <h3>Co z kursu przenosi się na Konstruktora</h3>
+      <div class="tw"><table>
+        <thead><tr><th>Element kursu</th><th>Przenosi się</th><th>Co konkretnie u ciebie</th></tr></thead>
+        <tbody>
+          <tr><td>Adwersarialny przegląd planu przed kodem (<code>/zroastuj-mnie</code>)</td><td><span class="tag ok">1:1</span></td><td>Najcenniejsza rzecz w całym kursie. Cel u ciebie: schemat bazy w etapie 2 i sesja na żywo w etapie 4 — nie etap 1, który jest na to za prosty.</td></tr>
+          <tr><td><code>design.md</code> jako brand book dla agenta</td><td><span class="tag ok">1:1</span></td><td>Masz przewagę: 95 KB dopracowanego CSS już istnieje w makiecie. Do spisania przed etapem 1, bo to pierwszy kod, który zacznie się rozjeżdżać.</td></tr>
+          <tr><td>Analityka i monitoring przed kodem</td><td><span class="tag ok">1:1</span></td><td>Krytyczne — patrz uwaga o etapie 6 niżej. To jest moje najmocniejsze pojedyncze zastrzeżenie do twojego planu.</td></tr>
+          <tr><td>Zewnętrzne review kodu (CodeRabbit)</td><td><span class="tag ok">1:1</span></td><td>W kursie znalazło 6 błędów po autopilocie, który miał własne review pięcioma subagentami. Przy kodzie oddawanym firmie to nie jest opcja.</td></tr>
+          <tr><td>Checklista operatora i ręczny przegląd</td><td><span class="tag ok">1:1</span></td><td>W kursie ręczny przegląd wyłapał trzy błędy funkcjonalne, których nie złapały testy — w tym pusty ekran główny.</td></tr>
+          <tr><td>Twarde rozdzielenie środowisk</td><td><span class="tag ok">1:1</span></td><td>W kursie autopilot puścił wszystkie migracje na złą bazę. U ciebie od etapu 2 w bazie są dane dzieci. Agent nie dostaje poświadczeń produkcyjnych. Nigdy.</td></tr>
+          <tr><td><code>dev-plan</code> → <code>dev-docs</code> → autopilot</td><td><span class="tag ok">1:1</span></td><td>Twoje etapy są większe niż kursowe, więc każdy trzeba jeszcze podzielić — i do tego ta sekwencja jest dokładnie tym, czego potrzebujesz.</td></tr>
+          <tr><td>Podział na etapy (<code>brainstorm</code>)</td><td><span class="tag warn">masz lepszy</span></td><td>Zrobione i lepiej. Ewentualnie użyj do rozbicia <em>pojedynczego</em> etapu na zadania.</td></tr>
+          <tr><td>Rozwiązanie trybu offline</td><td><span class="tag warn">tylko pytania</span></td><td>Kolejka w React Native ≠ service worker w PWA. Pytania z kursu zostają, odpowiedzi nie.</td></tr>
+          <tr><td>Git worktree — równoległe warianty UI</td><td><span class="tag warn">marginalnie</span></td><td>Wygląd masz rozstrzygnięty w makiecie. Co najwyżej do wariantów pojedynczych ekranów zaplecza.</td></tr>
+          <tr><td>Expo, EAS, moduły natywne, sklepy</td><td><span class="tag risk">nie dotyczy</span></td><td>PWA. Odpada razem z kosztami kont deweloperskich i procedurami wydawniczymi.</td></tr>
+          <tr><td>Monetyzacja, subskrypcje, RevenueCat</td><td><span class="tag risk">nie dotyczy</span></td><td>Projekt B2B rozliczany z firmą. Cały wątek odpada.</td></tr>
+          <tr><td>Pętla Ralph Wiggum, „mieli aż zrobi"</td><td><span class="tag risk">nie dotyczy</span></td><td>Autor pozycjonuje ją jako punkt startowy prototypu. Prototyp już masz — i jest lepszy.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Co dopisałbym do twojego planu</h3>
+      <p>Siedem uwag, w kolejności ważności. Pierwsza jest osobno, bo jest poważna.</p>
+
+      <div class="card risk">
+        <h4><span class="tag risk">Uwaga 1</span>Etap 6 zacznie się liczyć dopiero wtedy, gdy zaczniesz zbierać dane — a nie gdy do niego dojdziesz</h4>
+        <p>Twój dokument mówi wprost, że statystyki i testy A/B wymagają <em>„kilkuset przejść, czyli kilku placówek przez kilka miesięcy"</em>. Zgoda. Ale z tego wynika coś, czego w planie nie ma: <strong>jeśli zdarzenia zaczną lecieć dopiero w etapie 6, to ten zegar rusza w etapie 6</strong>. Semestr zbierania danych dokłada się wtedy <em>po</em> całej budowie, zamiast biec równolegle.</p>
+        <p>Kurs formułuje tę samą zasadę jednym zdaniem i to jest jego najlepsza pojedyncza rada operacyjna: <strong>„danych nie da się dorobić wstecz"</strong>. Autor zakłada konto analityczne i ustala listę 13 zdarzeń, zanim powstanie pierwsza linijka kodu.</p>
+        <p>U ciebie to oznacza konkret: <strong>ukończony krok, czas na kroku, powrót do poprzedniego kroku i ukończona budowla muszą być zapisywane już w etapie 1</strong> — lokalnie na tablecie, skoro backendu jeszcze nie ma, i wysyłane przy pierwszym wifi od etapu 2. Kosztuje to dzień pracy. Kupuje semestr.</p>
+      </div>
+
+      <ol>
+        <li><strong>Dane dzieci rozstrzygnięte przed schematem bazy w etapie 2.</strong> Szczegóły niżej — to jest twoje największe ryzyko projektowe i wpływa na kształt tabel.</li>
+        <li><strong><code>design.md</code> przed etapem 1.</strong> Pół dnia wyciągania z istniejącego CSS. Ratuje spójność wizualną na wszystkie siedem etapów i na każdą przyszłą sesję z agentem.</li>
+        <li><strong>Sentry od etapu 1.</strong> Aplikacja działa offline na cudzych tabletach, w cudzych salach, bez ciebie w pobliżu. Bez raportowania błędów dowiesz się o awarii z telefonu od instruktora — albo wcale.</li>
+        <li><strong>Roast na etapie 2 i na etapie 4, nie na pierwszym.</strong> Etap 1 jest prosty i odwracalny. Schemat bazy i sesja w sali bez internetu — nie są. Tam ta „nudna godzina" zwraca się najbardziej.</li>
+        <li><strong>Twoje pytania etapowe zamień na kryteria odbioru.</strong> „Czy instruktorzy ogarną instalację" jest świetnym pytaniem projektowym i bezużytecznym kryterium odbioru. Wersja mierzalna: „trzech z trzech instruktorów instaluje aplikację na własnym tablecie z pisemnej instrukcji, bez kontaktu ze mną". To jest dokładnie ten format, którego oczekuje <code>dev-docs</code>.</li>
+        <li><strong>Zewnętrzne review od pierwszego commita.</strong> Nie od momentu, w którym kod zrobi się poważny — bo wtedy jest już za późno na poprawienie fundamentu.</li>
+        <li><strong>Policz godziny jednej instrukcji, zanim policzysz resztę.</strong> Twój dokument sam wskazuje tę lukę. Kurs dokłada argument: strumień treści, a nie kod, wyznacza tempo — i to jedyna liczba, z której policzysz koszt całej biblioteki.</li>
+      </ol>
+
+      <h3>Czego nie ma ani w kursie, ani w twoim planie</h3>
+
+      <div class="card risk">
+        <h4><span class="tag risk">Luka 1</span>Dane dzieci — większe ryzyko niż cokolwiek technicznego</h4>
+        <p>Od etapu 2 w bazie pojawiają się imiona dzieci, ich postępy, zgłoszenia pomocy i czas na kroku. To dane osobowe małoletnich przetwarzane w placówkach oświatowych. Kurs nie dotyka tego ani słowem — buduje aplikację dla dorosłego użytkownika, który zakłada sobie konto sam.</p>
+        <p>Pytania do rozstrzygnięcia <strong>przed schematem bazy</strong>, bo każde zmienia jego kształt: kto jest administratorem — firma czy placówka? Czy potrzebna jest umowa powierzenia? Czy dziecko ma konto, czy tylko identyfikator w grupie? Czy imię jest konieczne, czy wystarczy pseudonim widoczny na tablecie? Jak długo trzymamy historię i co się dzieje, gdy dziecko kończy kurs? Czy szefostwo widzi imiona, czy wyłącznie agregaty?</p>
+        <p>Ostatnie pytanie ma haczyk, który już siedzi w makiecie: <strong>poziom grupy wylicza się z historii sesji</strong>. Skasowanie historii po roku skasuje też poziom. To trzeba rozstrzygnąć projektowo — migawka poziomu przy zamknięciu roku albo świadoma zgoda na reset. Dokładnie ten typ sprzeczności znajduje adwersarialny przegląd i dokładnie ten typ boli, gdy wyjdzie po napisaniu kodu.</p>
+      </div>
+
+      <div class="card risk">
+        <h4><span class="tag risk">Luka 2</span>Konstruktor-Box — najwyższe ryzyko projektu, zerowe pokrycie w kursie</h4>
+        <p>Sam oznaczyłeś etap 4 jako jedyny ze sprzętem i jedyny wysokiego ryzyka — słusznie. Warto wiedzieć, że <strong>z kursu nie dostaniesz na to nic</strong>: tam całe testowanie odbywa się na symulatorze i jednym telefonie autora. Sieć lokalna w sali, sześć tabletów, pudełko w trzech placówkach i ktoś od awarii to obszar, w którym jesteś sam.</p>
+        <p>Twoje własne obejście — kod sesji podawany na głos i synchronizacja w domu — jest tu najlepszym pomysłem w całym dokumencie. Utrzymuj je jako wariant domyślny tak długo, jak się da. I zaplanuj dzień prawdziwych zajęć jako etap, nie jako „sprawdzimy na koniec": <strong>jeden dzień w sali powie ci więcej niż cała bateria testów automatycznych</strong>.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Luka 3</span>Ktoś inny podpisze, że to działa</h4>
+        <p>W kursie autor sam definiuje „gotowe" i sam odhacza checklistę. U ciebie definicja gotowości jest przedmiotem odbioru — twój dokument zamyka się zresztą zdaniem „warunki ustalamy przed etapem 1, nie po". To jest ta sama myśl i dobrze, że już ją masz. Brakuje tylko ogniwa: <strong>warunki handlowe i kryteria techniczne to jeden dokument, nie dwa</strong>. Firma odbierająca „po ekranach" i ty rozliczany „po działającym przepływie" to dwa różne projekty.</p>
+      </div>
+
+      <div class="card warn">
+        <h4><span class="tag warn">Luka 4</span>Kod zostaje po tobie</h4>
+        <p>Najbardziej szczery moment kursu to zdanie autora o wygenerowanym skrypcie: <em>„nie pytajcie mnie, jaki to skrypt, ja też go nie znam — po prostu poprosiłem, żeby osiągnął cel"</em>. W projekcie hobbystycznym to akceptowalne. W systemie oddawanym firmie — nie, bo ktoś to będzie utrzymywał, a przy pierwszej awarii w sali pytanie „dlaczego to tak działa" padnie do ciebie.</p>
+        <p>Twoje komentarze w makiecie są pisane dokładnie tak, jak trzeba — opisują awarię, która wymusiła rozwiązanie. Utrzymaj ten standard w kodzie produkcyjnym i wymuszaj go na agencie. To jest ta sama funkcja, którą w kursie pełni zapisywanie wniosków do <code>.claude/rules/</code>.</p>
+      </div>
+
+      <h3>Gdzie autopilot tak, a gdzie ręka na sterze</h3>
+      <p>Kurs dostarcza twardy dowód w obie strony. Autopilot przepracował etap w 2,5 godziny bez nadzoru — i ten sam autopilot, mając własne review pięcioma subagentami, testy jednostkowe i E2E, oddał ekran główny, który nie pokazywał danych. Wniosek nie brzmi „nie używać". Brzmi: <strong>autonomia tam, gdzie porażka jest tania i widoczna</strong>.</p>
+      <div class="tw"><table>
+        <thead><tr><th>Autopilot bez oporów</th><th>Pod twoją ręką</th></tr></thead>
+        <tbody>
+          <tr><td>Przeskalowanie i optymalizacja renderów (42 MB → 3–6 MB)</td><td>Warstwa offline: service worker, limity pamięci, unieważnianie cache</td></tr>
+          <tr><td>Czytnik kroków z gotowego <code>design.md</code></td><td>Schemat bazy i wszystko, co dotyka danych dzieci</td></tr>
+          <tr><td>Ekrany CRUD zaplecza (etap 2)</td><td>Role i uprawnienia: dziecko, instruktor, zaplecze, szefostwo</td></tr>
+          <tr><td>Instrumentacja zdarzeń z gotowej listy</td><td>Sesja na żywo i sieć lokalna w sali (etap 4)</td></tr>
+          <tr><td>Testy do już ustalonej logiki, refaktory mechaniczne</td><td>Migracje bazy i cokolwiek na środowisku produkcyjnym</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Kalibracja terminu</h3>
+      <div class="card info">
+        <h4><span class="tag info">Ważne</span>Twoje szacunki są realistyczne — pod jednym warunkiem</h4>
+        <p>Masz w planie 2–3 tygodnie na etap 1 i 3–4 na etap 2, przy pracy popołudniami. To jest ten sam rząd wielkości, co w kursie, gdzie etap aplikacji mobilnej to 2,5 godziny samego autopilota — <strong>plus plan liczący tysiąc linii, plus checklista operatora, plus review, plus poprawki, plus dłubanina</strong>, którą kurs uczciwie pokazuje: zajęty port, zły profil buildu, dziesięć minut na jeden błąd.</p>
+        <p>Warunek brzmi: te tygodnie wypełnia praca <em>wokół</em> agenta, nie czekanie na niego. Jeśli ktoś w firmie usłyszy „AI to napisze w tydzień", liczby z kursu są najlepszym argumentem, jaki masz pod ręką — nie dlatego, że są pesymistyczne, tylko dlatego, że są zmierzone przez kogoś, kto ten pipeline zna.</p>
+      </div>
+
+      <h3>Odpowiedź w jednym zdaniu</h3>
+      <p class="pointer">Kurs nie da ci planu — ten masz lepszy — i nie da ci stacku, bo wybrałeś inny. Da ci <strong>sposób wykonania pojedynczego etapu</strong>: adwersarialny przegląd przed kodem, dokumenty przed autopilotem, checklistę operatora po nim, zewnętrzne review na końcu i twarde rozdzielenie środowisk przez cały czas. To jest dokładnie ta warstwa, której w „Siedmiu etapach" nie ma — bo ten dokument odpowiada na pytanie <em>co i w jakiej kolejności</em>, a kurs na pytanie <em>jak, żeby wyszło</em>.</p>
     </section>
 
     <section id="twoje" data-t="Zasady ogólne">
