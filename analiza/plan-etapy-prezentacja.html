@@ -1,0 +1,302 @@
+<title>Konstruktor — plan etapów</title>
+<meta name="author" content="Krzysztof Brożek">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700&family=Ubuntu:wght@400;500;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --violet-deep:#3E00BB;
+    --violet-mid:#6552D6;
+    --violet-light:#B9A0EB;
+    --navy:#250070;
+    --navy-deep:#19004B;
+    --lavender:#EDE4FF;
+    --pink:#FF39D0;
+    --blue:#3898EC;
+    --card:#FFFFFF;
+    --ink-soft:#5B4A85;
+    --ink-faint:#8B7FAE;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:linear-gradient(158deg,#4A05CE 0%,#3E00BB 42%,#19004B 100%);
+    color:#fff;font-family:'Ubuntu',sans-serif;line-height:1.55;
+  }
+  h1,h2,h3,h4,.display{font-family:'Baloo 2',sans-serif;font-weight:600;letter-spacing:-0.01em;margin:0;}
+
+  .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .bg::before{
+    content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:58px 58px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 15%,transparent 70%);
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 15%,transparent 70%);
+  }
+  .blob{position:absolute;border-radius:50%;filter:blur(14px);}
+  .blob.a{width:720px;height:500px;top:-260px;right:-150px;background:radial-gradient(circle,rgba(185,160,235,.5),transparent 65%);}
+  .blob.b{width:620px;height:440px;top:900px;left:-220px;background:radial-gradient(circle,rgba(255,57,208,.28),transparent 65%);}
+  .blob.c{width:560px;height:400px;top:2200px;right:-180px;background:radial-gradient(circle,rgba(56,152,236,.2),transparent 65%);}
+  .blob.d{width:560px;height:400px;bottom:-200px;left:-160px;background:radial-gradient(circle,rgba(185,160,235,.3),transparent 65%);}
+
+  .wrap{position:relative;z-index:2;max-width:920px;margin:0 auto;padding:clamp(28px,5vh,56px) 20px 70px;}
+
+  header{text-align:center;padding-bottom:clamp(20px,4vh,40px);}
+  .brand{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;}
+  .brand svg{width:30px;height:28px;flex-shrink:0;}
+  .brand span{font-family:'Baloo 2',sans-serif;font-weight:600;font-size:15.5px;}
+  h1.title{font-size:clamp(32px,6vw,54px);line-height:1.08;text-wrap:balance;max-width:760px;margin:0 auto;}
+  h1.title .accent{background:linear-gradient(100deg,#FFB8EC,#C9AEFF 60%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .lede{max-width:56ch;margin:18px auto 0;color:#E7DDFF;font-size:16px;}
+  .meta{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:24px;}
+  .meta span{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:6px 13px;color:#F2ECFF;}
+
+  .legend{display:flex;justify-content:center;gap:22px;margin-top:30px;font-family:var(--mono);font-size:11.5px;color:#E7DDFF;}
+  .legend b{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;}
+
+  .phase{margin-top:56px;}
+  .phase-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;}
+  .phase-num{font-family:var(--mono);font-size:12px;color:#C9AEFF;letter-spacing:.1em;}
+  .phase-head h2{font-size:clamp(20px,3vw,26px);color:#fff;}
+
+  .tracks{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:680px){.tracks{grid-template-columns:1fr;}}
+
+  .track{
+    --accent:var(--pink);
+    background:var(--card);border-radius:18px;padding:20px 20px 18px;
+    color:var(--navy);box-shadow:0 20px 40px -20px rgba(10,0,45,.6);
+    border-top:5px solid var(--accent);
+  }
+  .track.app{--accent:var(--blue);}
+  .track .kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:6px;}
+  .track h3{font-size:18px;color:var(--navy);margin-bottom:8px;line-height:1.25;}
+  .track p{font-size:13.5px;color:var(--ink-soft);margin:0 0 12px;line-height:1.5;}
+  .track .facts{display:flex;flex-wrap:wrap;gap:6px;}
+  .track .facts span{font-family:var(--mono);font-size:10.5px;background:var(--lavender);color:var(--navy);padding:4px 9px;border-radius:6px;}
+  .track.app .facts span{background:#DCEEFC;}
+  .track .facts span.crit{background:transparent;border:1px dashed var(--ink-faint);color:var(--ink-faint);}
+
+  .empty{display:flex;align-items:center;justify-content:center;min-height:120px;text-align:center;font-size:13.5px;color:var(--ink-faint);font-style:italic;}
+
+  .sync{margin-top:12px;display:flex;align-items:center;gap:10px;justify-content:center;font-family:var(--mono);font-size:11.5px;color:#FFE8FB;background:rgba(255,255,255,.1);border:1px dashed rgba(255,255,255,.35);border-radius:999px;padding:8px 16px;text-align:center;}
+
+  .money{margin-top:64px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:26px 24px;}
+  .money h2{font-size:22px;margin-bottom:6px;}
+  .money>p{color:#E7DDFF;font-size:13.5px;margin:0 0 18px;}
+  .tablewrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:480px;}
+  th{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#C9AEFF;text-align:left;padding:0 10px 8px 0;border-bottom:1px solid rgba(255,255,255,.25);}
+  td{padding:8px 10px 8px 0;border-bottom:1px solid rgba(255,255,255,.12);color:#EDE4FF;}
+  td:first-child{color:#fff;font-weight:600;white-space:nowrap;}
+  tr.total td{border-bottom:none;border-top:2px solid rgba(255,255,255,.4);padding-top:11px;font-weight:700;color:#fff;}
+
+  .close{margin-top:44px;}
+  .close h2{font-size:22px;margin-bottom:12px;}
+  .close ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;color:#EDE4FF;font-size:14px;}
+  .close ol b{color:#fff;}
+  .close li[data-new] b{color:#FFB8EC;}
+  .ask{margin-top:22px;padding:16px 18px;background:rgba(255,255,255,.1);border-left:3px solid #FFB8EC;border-radius:0 14px 14px 0;font-size:13.5px;color:#F2ECFF;line-height:1.55;}
+
+  footer{margin-top:56px;text-align:center;font-family:var(--mono);font-size:11px;color:#B9A0EB;line-height:1.7;}
+</style>
+
+<div class="bg"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div><div class="blob d"></div></div>
+
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 43 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M22.1485 7.45639L25.2638 5.56933C25.5892 5.36598 25.7437 4.97556 25.6461 4.60953C25.5485 4.23537 25.215 3.98322 24.8327 3.97509L20.7251 3.91002L24.9628 1.61627C25.3777 1.38852 25.5404 0.867952 25.3126 0.453124C25.0849 0.0382969 24.5643 -0.12438 24.1495 0.103368L17.0242 3.96696C16.6826 4.15404 16.5036 4.55259 16.6012 4.92675C16.6907 5.30904 17.0323 5.57746 17.4228 5.5856L21.8313 5.65067L18.7567 7.52146C3.75785 8.25351 0 15.2242 0 23.7241C0 32.7121 4.19708 40 21.4327 40C38.6684 40 42.8655 32.7121 42.8655 23.7241C42.8655 14.7362 38.7742 7.66787 22.1485 7.46452V7.45639ZM19.0821 36.6976C4.92913 36.6976 1.48036 30.8901 1.48036 23.716C1.48036 16.5419 4.92913 10.7343 19.0821 10.7343C33.235 10.7343 36.6838 16.5419 36.6838 23.716C36.6838 30.8901 33.235 36.6976 19.0821 36.6976Z" fill="url(#hubPaint0)"/>
+        <path d="M14.0063 27.8153C14.0063 30.1172 16.292 32.0042 19.0819 32.0042C21.8718 32.0042 24.1574 30.1172 24.1574 27.8153C24.1574 25.5134 14.0063 25.5134 14.0063 27.8153Z" fill="url(#hubPaint1)"/>
+        <path d="M14.0066 18.6974C14.0066 17.6888 13.1769 16.8591 12.1683 16.8591C11.1597 16.8591 10.3301 17.6888 10.3301 18.6974V21.0237C10.3301 22.0323 11.1597 22.8619 12.1683 22.8619C13.1769 22.8619 14.0066 22.0323 14.0066 21.0237V18.6974Z" fill="url(#hubPaint2)"/>
+        <path d="M25.9957 16.8591C24.9871 16.8591 24.1575 17.6888 24.1575 18.6974V21.0237C24.1575 22.0323 24.9871 22.8619 25.9957 22.8619C27.0043 22.8619 27.834 22.0323 27.834 21.0237V18.6974C27.834 17.6888 27.0043 16.8591 25.9957 16.8591Z" fill="url(#hubPaint3)"/>
+        <defs>
+          <linearGradient id="hubPaint0" x1="39.5875" y1="5.65067" x2="8.20708" y2="36.8847" gradientUnits="userSpaceOnUse"><stop stop-color="#FF39D0"/><stop offset="1" stop-color="#3E00BB"/></linearGradient>
+          <linearGradient id="hubPaint1" x1="40.7587" y1="6.8299" x2="9.37005" y2="38.064" gradientUnits="userSpaceOnUse"><stop stop-color="#FF39D0"/><stop offset="1" stop-color="#3E00BB"/></linearGradient>
+          <linearGradient id="hubPaint2" x1="33.048" y1="-0.921511" x2="1.65937" y2="30.3125" gradientUnits="userSpaceOnUse"><stop stop-color="#FF39D0"/><stop offset="1" stop-color="#3E00BB"/></linearGradient>
+          <linearGradient id="hubPaint3" x1="39.929" y1="5.99228" x2="8.54044" y2="37.2263" gradientUnits="userSpaceOnUse"><stop stop-color="#FF39D0"/><stop offset="1" stop-color="#3E00BB"/></linearGradient>
+        </defs>
+      </svg>
+      <span>Akademia Robotyki</span>
+    </div>
+    <h1 class="title">Dwa tory.<br><span class="accent">Jeden plan.</span></h1>
+    <p class="lede">Instrukcje i warstwa edukacyjna rosną równolegle z aplikacją — nie po kolei. Poniżej faza po fazie, z punktami, w których jeden tor odblokowuje drugi.</p>
+    <div class="meta">
+      <span>19 września 2026</span>
+      <span>Krzysztof Brożek</span>
+      <span>faza bieżąca: pilotaż</span>
+    </div>
+    <div class="legend">
+      <span><b style="background:var(--pink)"></b>tor: instrukcje i warstwa edukacyjna</span>
+      <span><b style="background:var(--blue)"></b>tor: aplikacja</span>
+    </div>
+  </header>
+
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">FAZA 0</span><h2>Pilotaż — zanim powstanie aplikacja</h2></div>
+    <div class="tracks">
+      <div class="track">
+        <div class="kicker">Instrukcje</div>
+        <h3>Pierwsze instrukcje, prawdziwe zajęcia</h3>
+        <p>Cztery instrukcje testowane na żywo w małej, wybranej grupie instruktorów — materiały udostępnione przez wspólny Dysk, nie od razu wszystkim. Po każdych zajęciach krótka informacja: co było zrozumiałe, gdzie dzieci utknęły.</p>
+        <div class="facts">
+          <span>czas: 3 instrukcje</span>
+          <span>koszt: 0 zł</span>
+          <span class="crit">kryterium: wnioski spisane przed fazą 1</span>
+        </div>
+      </div>
+      <div class="track app">
+        <div class="kicker">Aplikacja</div>
+        <div class="empty">jeszcze jej nie ma — świadomie</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">FAZA 1</span><h2>MVP dla dziecka</h2></div>
+    <div class="tracks">
+      <div class="track app">
+        <div class="kicker">Aplikacja</div>
+        <h3>Czytnik instrukcji na tablet</h3>
+        <p>PWA instalowana z ikony, pełne działanie offline. Instruktor na razie wybiera instrukcję ręcznie, na tablecie dziecka.</p>
+        <div class="facts">
+          <span>czas: 2–3 tyg.</span>
+          <span>koszt: 0–20 zł/mies.</span>
+          <span class="crit">kryterium: 3/3 instruktorów instaluje samodzielnie</span>
+        </div>
+      </div>
+      <div class="track">
+        <div class="kicker">Instrukcje</div>
+        <h3>Produkcja trwa, dystrybucja wciąż ręczna</h3>
+        <p>Nowe instrukcje nadal trafiają do aplikacji przez dewelopera — panelu jeszcze nie ma. Równolegle spisujemy wzorzec wizualny (design.md), żeby kolejne ekrany trzymały się jednego wyglądu.</p>
+        <div class="facts"><span>bez nowego kosztu</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">FAZA 2</span><h2>Samoobsługa</h2></div>
+    <div class="tracks">
+      <div class="track app">
+        <div class="kicker">Aplikacja</div>
+        <h3>Panel do wgrywania instrukcji</h3>
+        <p>Nowa instrukcja trafia na tablety bez zmiany w kodzie. Decyzja o danych dzieci i ich retencji musi zapaść przed schematem bazy.</p>
+        <div class="facts">
+          <span>czas: 3–4 tyg.</span>
+          <span>koszt: 20–60 zł/mies.</span>
+          <span class="crit">kryterium: nowa instrukcja na tablecie w &lt;10 min</span>
+        </div>
+      </div>
+      <div class="track">
+        <div class="kicker">Instrukcje</div>
+        <h3>Biblioteka rośnie sama</h3>
+        <p>Narzędziownik i Studio 2.0 zasilają panel bezpośrednio. Kolejne wersje warstwy edukacyjnej — historyjki, sposób tłumaczenia programowania, zadania kreatywne — testowane i poprawiane po realnych zajęciach.</p>
+        <div class="facts"><span>bez nowego kosztu</span></div>
+      </div>
+    </div>
+    <div class="sync">⇄ panel gotowy — produkcja instrukcji odłącza się od kodu aplikacji</div>
+  </section>
+
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">FAZA 3</span><h2>Metodyka dla instruktora</h2></div>
+    <div class="tracks">
+      <div class="track app">
+        <div class="kicker">Aplikacja</div>
+        <h3>Widok instruktora</h3>
+        <p>Osobny ekran na telefonie/tablecie instruktora: grupa, planowana instrukcja, historia zajęć, uwagi z poprzednich lekcji.</p>
+        <div class="facts">
+          <span>czas: 2 tyg. + pisanie</span>
+          <span>koszt: bez zmian</span>
+        </div>
+      </div>
+      <div class="track">
+        <div class="kicker">Instrukcje</div>
+        <h3>Scenariusz do każdej instrukcji</h3>
+        <p>Ta sama praca co warstwa edukacyjna — teraz spisana tak, żeby ktoś inny poprowadził z niej zajęcia bez pytań do autora.</p>
+        <div class="facts"><span class="crit">kryterium: obcy instruktor prowadzi bez pytań</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">FAZA 4</span><h2>Sesja na żywo</h2></div>
+    <div class="tracks">
+      <div class="track app">
+        <div class="kicker">Aplikacja</div>
+        <h3>4a bez sprzętu → 4b Konstruktor-Box</h3>
+        <p>Najpierw kod sesji podawany na głos, bez sieci w sali. Dopiero gdy to za mało — sprzęt, jedna sieć, sterowanie tabletami w czasie rzeczywistym.</p>
+        <div class="facts">
+          <span>4a: 2–3 tyg.</span>
+          <span>4b: 2–3 mies., 300–800 zł/sala</span>
+        </div>
+      </div>
+      <div class="track">
+        <div class="kicker">Instrukcje</div>
+        <h3>Metadane gotowe do przypisania</h3>
+        <p>Moduł, grupa, poziom trudności każdej instrukcji muszą być uzupełnione, zanim da się je przypisywać do wspólnej sesji.</p>
+        <div class="facts"><span>bez nowego kosztu</span></div>
+      </div>
+    </div>
+    <div class="sync">⇄ łączymy dopiero to, co sprawdzone osobno — aplikację dziecka i instruktora</div>
+  </section>
+
+  <section class="phase">
+    <div class="phase-head"><span class="phase-num">FAZA 5</span><h2>Pełny system</h2></div>
+    <div class="tracks">
+      <div class="track app">
+        <div class="kicker">Aplikacja</div>
+        <h3>Odznaki i statystyki</h3>
+        <p>Odznaki lokalne, potem grupowe (po 4b). Statystyki i testy A/B — dzięki zdarzeniom zbieranym od fazy 1 to już tylko analiza, nie zbieranie danych od zera.</p>
+        <div class="facts"><span>bez nowego kosztu</span></div>
+      </div>
+      <div class="track">
+        <div class="kicker">Instrukcje</div>
+        <h3>Dane wracają do produkcji</h3>
+        <p>Trudne kroki i wyniki testów A/B mówią, które instrukcje poprawić i które warianty rysunku zmienić.</p>
+        <div class="facts"><span>bez nowego kosztu</span></div>
+      </div>
+    </div>
+    <div class="sync">⇄ dane z aplikacji zasilają z powrotem produkcję instrukcji</div>
+  </section>
+
+  <section class="money">
+    <h2>Podsumowanie kosztów</h2>
+    <p>Stały rachunek zaczyna się dopiero od fazy 2 — wszystko wcześniej mieści się w darmowych planach i narzędziach, które już istnieją.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Faza</th><th>Czas</th><th>Koszt stały</th><th>Jednorazowo</th></tr></thead>
+        <tbody>
+          <tr><td>0 · Pilotaż</td><td>3 instrukcje</td><td>0 zł</td><td>—</td></tr>
+          <tr><td>1 · MVP</td><td>2–3 tyg.</td><td>0–20 zł/mies.</td><td>—</td></tr>
+          <tr><td>2 · Panel</td><td>3–4 tyg.</td><td>20–60 zł/mies.</td><td>—</td></tr>
+          <tr><td>3 · Instruktor</td><td>2 tyg. + pisanie</td><td>bez zmian</td><td>—</td></tr>
+          <tr><td>4a · Sesja bez sprzętu</td><td>2–3 tyg.</td><td>bez zmian</td><td>—</td></tr>
+          <tr><td>4b · Konstruktor-Box</td><td>2–3 mies.</td><td>bez zmian</td><td>300–800 zł/sala</td></tr>
+          <tr><td>5 · Pełny system</td><td>3–4 tyg.</td><td>bez zmian</td><td>—</td></tr>
+          <tr class="total"><td>Fazy 0–3, razem</td><td>ok. 2 miesiące</td><td>do 60 zł/mies.</td><td>0 zł</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="close">
+    <h2>Do ustalenia przed startem fazy 1</h2>
+    <ol>
+      <li><b>Jakie tablety mają instruktorzy?</b> Android czy iPad — zmienia instalację i limity pamięci.</li>
+      <li><b>Ilu instruktorów i w ilu placówkach testuje na start?</b> Im mniej, tym szybciej wrócą uwagi.</li>
+      <li><b>Kto odpowiada za hosting i rachunek od fazy 2?</b></li>
+      <li data-new><b>Kto po stronie Akademii zatwierdza przejście do kolejnej fazy?</b></li>
+      <li><b>Jakie dane o dzieciach wolno zapisywać i na jak długo?</b> Rozstrzygnięcie potrzebne przed schematem bazy w fazie 2.</li>
+      <li><b>Ile godzin zajmuje jedna instrukcja?</b> Jedyna brakująca liczba do policzenia kosztu skalowania biblioteki.</li>
+    </ol>
+    <div class="ask">Powyższe dotyczy zakresu i harmonogramu. Warunki realizacji z mojej strony — czas i zaangażowanie poza zakresem etatu, a także prawa do makiety i materiałów — ustalimy odrębnie, zanim ruszy faza 1.</div>
+  </section>
+
+  <footer>
+    Akademia Robotyki · plan etapów · wrzesień 2026<br>
+    © 2026 Krzysztof Brożek — projekt, tekst, interfejs i kod
+  </footer>
+
+</div>
